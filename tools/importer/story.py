@@ -70,7 +70,7 @@ def evidence():
 
 
 def stat(figure, caption):
-    return [f'<h4><strong>{esc(figure)}</strong> {esc(caption)}</h4>']
+    return [f'<h3><strong>{esc(figure)}</strong> {esc(caption)}</h3>']
 
 
 def tile(title, *paras, link=None):
@@ -111,7 +111,7 @@ def main():
         'with high fidelity, using content-driven development, real blocks and Canvas-ready authoring. '
         'Search where the site has search, sheets where it needs sheets, and preview on aem.page only. '
         'Nothing here was ever published to aem.live.</p>',
-        block('cards info cols-4', [
+        block('cards stats cols-4', [
             stat(ev['pages'], 'pages migrated and previewed, across 11 source archetypes'),
             stat(ev['blocks'], 'block directories, all lint-clean'),
             stat(ev['media'], 'images fetched in a real browser and stored in DA'),
