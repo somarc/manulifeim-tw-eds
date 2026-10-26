@@ -214,10 +214,12 @@ def main():
                 f"{ev['sheet_rows'].get('authors', 0)}, case studies {ev['sheet_rows'].get('case-studies', 0)}, "
                 f"placeholders {ev['placeholders']} keys."),
             step('Configure Experience Workspace, then verify it', [
-                'Canvas is the default editor, Layout is the default view, and the Publish card is removed '
-                'site-wide. Every config write is a reviewed dry-run, committed only against its digest.'],
+                'Canvas is the default editor, Layout is the default view, Canvas renders the migration branch, '
+                'and the Publish card is removed site-wide. Every config write is a reviewed dry-run, committed only against its digest.'],
                 'da --qmd site config set --flag ew.enabled=true --flag editor.hidePublish=/ \\\n'
                 '  --flag ew.canvasDefaultView=layout                 # dry-run → reviewDigest\n'
+                '# ew.wysiwygBranch is a first-sheet key: da-cli refuses --flag and asks for --set-sheet\n'
+                'da --qmd site config set --set-sheet flags=flags.json   # + /somarc/manulifeim-tw-eds/=migration\n'
                 'da --commit --qmd site config set … --expected-review-digest sha256:…\n'
                 'python3 tools/importer/build-library.py            # blocks, options, templates, icons\n'
                 'da --commit --qmd content put-tree <workspace>/content/library --prefix /library --yes\n'
@@ -246,6 +248,7 @@ def main():
         tile('ew.enabled = true', 'Canvas replaces the classic editor for this site; <em>/edit</em> redirects.'),
         tile('editor.hidePublish = /', 'No Publish card anywhere: the editor itself enforces "aem.page only".'),
         tile('ew.canvasDefaultView = layout', 'Pages open in Layout, rendered by the site\'s own blocks.'),
+        tile('ew.wysiwygBranch = migration', 'Layout renders the proof-of-concept branch\'s code, with no ?ref needed.'),
         tile(f"{ev['library_blocks']} library blocks", 'Each with its real variants and a description, harvested from the migrated pages.'),
         tile(f"{ev['options']} authoring options", 'Section styles and page metadata (template, type, date, tags, authors, disclaimer) as dropdowns.'),
         tile('4 templates · 76 icons', 'Landing page, article, press release and legal page skeletons; the full icon set.'),
@@ -267,9 +270,9 @@ def main():
     nxt = section(
         '<h2>Honest <em>boundaries</em></h2>'
         '<ul>'
-        '<li>AEM Code Sync is an owner-gated GitHub step. It is installed; refs pushed before the install '
-        '(main) reach the code bus on their next push, so the reviewed branch is the canonical preview until '
-        'the pull request merges. Canvas opens that code with ?ref=migration.</li>'
+        '<li>This is a proof of concept on the <em>migration</em> branch: it is the canonical preview, '
+        'and Experience Workspace renders it by default (ew.wysiwygBranch). main is intentionally left as '
+        'the boilerplate; nothing is merged or published.</li>'
         f"<li>{ev['pages']} pages cover every archetype; the remaining sitemap URLs (mostly ~700 viewpoint "
         'articles, ~160 press releases and author data) reuse these templates and importers but were not bulk-imported.</li>'
         '<li>Coveo also searched PDFs and fund data; this search covers migrated pages. Marketo forms render '

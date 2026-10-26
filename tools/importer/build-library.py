@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from common import CAPTURES, REPO, content_root  # noqa: E402
 
 DA = 'https://content.da.live/somarc/manulifeim-tw-eds'
-CODE = 'https://main--manulifeim-tw-eds--somarc.aem.page'
+CODE = 'https://migration--manulifeim-tw-eds--somarc.aem.page'  # canonical preview branch (PoC, not merged)
 SKIP_BLOCKS = {'metadata', 'section-metadata', 'library-metadata'}
 SKIP_DOCS = ('library/', 'drafts/', 'media/', 'data/')
 MAX_VARIANTS = 6

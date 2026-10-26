@@ -4,9 +4,10 @@ An independent, high-fidelity migration of https://www.manulifeim.com/institutio
 AEM Edge Delivery Services, authored in Document Authoring / Experience Workspace. It was built with
 FluffyJaws Dev Studio and da-cli, with every remote operation journaled as a QMD receipt.
 This is not the official Manulife site, and it is **preview-only**: nothing is published to aem.live.
+It is a proof of concept that lives on the `migration` branch (intentionally not merged to `main`).
 
-- Preview: https://main--manulifeim-tw-eds--somarc.aem.page/
-- How we built this: https://main--manulifeim-tw-eds--somarc.aem.page/how-we-built-this
+- Preview: https://migration--manulifeim-tw-eds--somarc.aem.page/
+- How we built this: https://migration--manulifeim-tw-eds--somarc.aem.page/how-we-built-this
 - Experience Workspace (Canvas): https://da.live/canvas#/somarc/manulifeim-tw-eds/index
 - DA content: https://da.live/#/somarc/manulifeim-tw-eds
 - Content model and team contract: [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md)
@@ -25,7 +26,7 @@ This is not the official Manulife site, and it is **preview-only**: nothing is p
 - **Data:** `/data/content-index` (search and listings; see ADR-001), `/data/authors` (217),
   `/data/case-studies` (62), and `/placeholders` (81 UI labels).
 - **Experience Workspace:** `ew.enabled`, `editor.hidePublish=/` (no Publish card),
-  `ew.canvasDefaultView=layout`, plus a generated library: blocks with real variants, options
+  `ew.canvasDefaultView=layout`, `ew.wysiwygBranch` → `migration`, plus a generated library: blocks with real variants, options
   dropdowns, templates and icons.
 
 Not migrated: the remaining sitemap URLs (mostly ~700 viewpoint articles and ~160 press releases, which
@@ -36,8 +37,8 @@ login/registration. Unmigrated links land on a 404 page that names the gap and l
 
 ```sh
 npm ci && npm run lint
-da --org somarc --repo manulifeim-tw-eds site pin-target
-da up --mode runtime --port 3000 --url https://main--manulifeim-tw-eds--somarc.aem.page
+da --org somarc --repo manulifeim-tw-eds --branch migration site pin-target
+da up --mode runtime --port 3000 --url https://migration--manulifeim-tw-eds--somarc.aem.page
 ```
 
 Importers read browser captures (Akamai blocks non-browser clients) and write only into the external
