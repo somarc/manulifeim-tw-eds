@@ -26,6 +26,7 @@ TEAM = [
     ('Homepage', 'specialist · high', 'Hero carousel, disclosures, the social tile and the homepage document.'),
     ('Landing pages', 'specialist · high', 'Hero, cards, anchor nav, colour bands, promo banners, timeline, image toggle, quote, video and a demo-safe form; nine pages.'),
     ('Discovery', 'specialist · high', 'Article template, index-driven teasers, viewpoint/press/case-study listings, browse-by, tag cloud and search; articles, releases and sheets.'),
+    ('Wave 2: link graph', 'specialist · high', 'Closed the link graph: the 17 viewpoint articles linked from migrated pages and the 4 footer legal pages, plus a table block.'),
     ('Fidelity QA ×2', 'specialists · high', 'Page-by-page, four-viewport comparison against the source with fix authority over disjoint block sets.'),
     ('Code Sync gate', 'specialist · low', 'Held the one owner-gated step, installing AEM Code Sync with the owner\'s passkey, so the build kept moving while it was pending.'),
 ]
@@ -96,7 +97,7 @@ def main():
         ['<picture><img src="/media/digital-hero-image-2000x1200.jpg" alt=""></picture>'],
         ['<h1>How we built <em>this</em></h1>'
          '<p>manulifeim.com/institutional/tw/en, rebuilt on AEM Edge Delivery Services and authored in '
-         'Experience Workspace by one lead agent and ten specialists in FluffyJaws Dev Studio. Every '
+         'Experience Workspace by one lead agent and eleven specialists in FluffyJaws Dev Studio. Every '
          'remote operation was reviewed before it ran and left a receipt.</p>'
          '<p><strong><a href="#blueprint">Explore the blueprint</a></strong></p>'],
     ]))
@@ -124,7 +125,7 @@ def main():
         style='intro', extra={'Anchor': 'brief'})
 
     team = section(block('feature-band navy overlay', [[
-        '<h2>One lead. Ten <em>specialists</em>.</h2>'
+        '<h2>One lead. Eleven <em>specialists</em>.</h2>'
         '<p>The lead owned every shared file and every remote mutation policy. Specialists owned disjoint '
         'files under a written contract (docs/CONTENT-MODEL.md), so parallel work never collided in the '
         'checkout. Nobody committed but the lead; nobody published at all.</p>',
@@ -276,8 +277,10 @@ def main():
         '<li>This is a proof of concept on the <em>migration</em> branch: it is the canonical preview, '
         'and Experience Workspace renders it by default (ew.wysiwygBranch). main is intentionally left as '
         'the boilerplate; nothing is merged or published.</li>'
-        f"<li>{ev['pages']} pages cover every archetype; the remaining sitemap URLs (mostly ~700 viewpoint "
-        'articles, ~160 press releases and author data) reuse these templates and importers but were not bulk-imported.</li>'
+        f"<li>{ev['pages']} pages cover every archetype, and every viewpoint linked from a migrated page is "
+        'migrated too. The remaining sitemap URLs (mostly ~680 more viewpoint articles, ~155 press releases, '
+        '94 strategy pages and author data) reuse these templates and importers but were not bulk-imported; '
+        'their links land on a page that names the gap and links to the original.</li>'
         '<li>Coveo also searched PDFs and fund data; this search covers migrated pages. Marketo forms render '
         'faithfully but cannot submit. Login and registration stay unavailable, as on the source.</li>'
         '<li>Brand fonts, photography and copy belong to Manulife. This is an independent migration study, not '
@@ -288,7 +291,7 @@ def main():
 
     doc = page([hero, nav, brief, team, team_tiles, blueprint, workspace, workspace_tiles, caught, nxt], {
         'Title': 'How we built this | Manulife Investment Management (EDS migration study)',
-        'Description': 'How one lead agent and ten specialists migrated manulifeim.com/institutional/tw/en to AEM Edge Delivery Services and Experience Workspace, with every step on the record.',
+        'Description': 'How one lead agent and eleven specialists migrated manulifeim.com/institutional/tw/en to AEM Edge Delivery Services and Experience Workspace, with every step on the record.',
         'Image': '<picture><img src="/media/digital-hero-image-2000x1200.jpg" alt=""></picture>',
         'Disclaimer': 'off',
         'Robots': 'noindex, nofollow',
