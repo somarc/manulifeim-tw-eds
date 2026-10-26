@@ -1,0 +1,58 @@
+/* Table: the source's table2 card — white, shadowed, 48px inset, rows ruled in grey */
+.table {
+  --table-first-col: minmax(0, 1fr);
+
+  overflow-x: auto;
+  padding: 48px;
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.table.row-header.header {
+  --table-first-col: minmax(0, 1.5fr);
+}
+
+/* a row-header-only table (Pillar | indicator): narrow label column (133 / 449px at 1440) */
+.table.row-header:not(.header) {
+  --table-first-col: minmax(0, 0.3fr);
+}
+
+.table .table-row {
+  display: grid;
+  grid-template-columns: var(--table-first-col) repeat(calc(var(--table-cols, 2) - 1), minmax(0, 1fr));
+  min-width: calc(var(--table-cols, 2) * 120px);
+  border-block-end: 1px solid var(--rule-color);
+}
+
+.table > .table-row > div {
+  padding: 24px 16px;
+  font-size: var(--font-size-small);
+  line-height: 19.6px;
+}
+
+.table.header > .table-head > div {
+  padding: 15px;
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+  font-weight: 700;
+}
+
+.table > .table-row > :is(.table-rowheader, .table-columnheader:first-child) {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: 700;
+}
+
+.table :is(p, ul) {
+  margin: 0;
+}
+
+.table ul {
+  padding-inline-start: 20px;
+}
+
+@media (width <= 600px) {
+  .table {
+    padding: 24px;
+  }
+}

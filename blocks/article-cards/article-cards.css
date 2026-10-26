@@ -238,8 +238,19 @@ html[quick-edit] .article-cards > [data-config] p {
   background-color: var(--color-white);
 }
 
+/* source tile at 1440 (234px with a two-line title): 24 pad, 16px date line, 32px to the
+   title, 50px to "Read more" (a 28px line), 24 pad */
+.article-cards.news .article-card-date {
+  line-height: 16px;
+}
+
 .article-cards.news .article-card-body :is(h2, h3) {
-  margin-block: 8px 16px;
+  margin-block: 32px 0;
+  font-weight: 400;
+}
+
+.article-cards.news .article-card-more {
+  margin-block-start: 50px;
 }
 
 /* feature: 50/50 card, text left, image right */

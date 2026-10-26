@@ -473,9 +473,10 @@ main.article-type-press > .article-body:not(:has(~ .article-body)) {
   padding-block-end: 64px;
 }
 
-/* legal pages (Type: legal): a 64px title band, 32px body bands, plain text-colour links;
-   a narrow-center section (Important information) keeps the source's 600px measure with a
-   32/40 bold underlined title */
+/* legal pages (Type: legal): a 64px title band, 32px body bands, plain text-colour links.
+   A title followed by the text in the same section (Important information, global legal
+   terms…) is 32/40 bold (underlined only where the source authored it: <u>); `narrow-center`
+   keeps the source's 600px measure, `narrow` its centred 8-of-12 column (913px at 1440) */
 main.article-type-legal {
   background-color: transparent;
 }
@@ -488,15 +489,14 @@ main.article-type-legal > .section:last-of-type {
   padding-block-end: 64px;
 }
 
-main.article-type-legal > .narrow-center h1 {
+main.article-type-legal > .article-header:has(h1 ~ *) h1 {
   margin: 0;
   font-size: var(--font-size-title);
   line-height: var(--line-height-title);
   font-weight: 700;
-  text-decoration: underline;
 }
 
-main.article-type-legal > .article-header:not(.narrow-center) h1 {
+main.article-type-legal > .article-header:not(:has(h1 ~ *)) h1 {
   margin: 0;
   font-size: var(--font-size-display);
   line-height: var(--line-height-display);
@@ -505,6 +505,17 @@ main.article-type-legal > .article-header:not(.narrow-center) h1 {
 
 main.article-type-legal > .section.narrow-center > div.default-content-wrapper {
   max-width: 600px;
+}
+
+main.article-type-legal > .section.narrow > div.default-content-wrapper {
+  max-width: 75%;
+  margin-inline: auto;
+}
+
+@media (width <= 800px) {
+  main.article-type-legal > .section.narrow > div.default-content-wrapper {
+    max-width: none;
+  }
 }
 
 main.article-type-legal > .article-header.narrow-center p:not(.article-date) {

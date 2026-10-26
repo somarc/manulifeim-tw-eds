@@ -72,7 +72,13 @@ def site_path(href):
             rest = path[len(prefix):]
             rest = re.sub(r'\.html$', '', rest).rstrip('/')
             # EDS normalises repeated hyphens in delivered paths ("credit--relative" → "credit-relative")
+            # and a path segment cannot end in "-" ("why-invest-in-farmland-")
             rest = re.sub(r'-{2,}', '-', rest)
+            rest = re.sub(r'-+(?=/|$)', '', rest)
+            # virtual source routes (not pages): tag listings become filtered viewpoint listings
+            tag = re.fullmatch(r'/viewpoints/tag/([^/]+)', rest)
+            if tag:
+                return f'/viewpoints/all?tags={tag.group(1).lower()}'
             if rest in ('', '/index'):
                 rest = '/'
             frag = f'#{parts.fragment}' if parts.fragment else ''

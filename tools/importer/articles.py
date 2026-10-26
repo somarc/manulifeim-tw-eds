@@ -20,6 +20,7 @@ from urllib.parse import urlsplit
 from common import (CAPTURES, ORIGIN, BeautifulSoup, block, clean, content_root, esc, image,
                     load, media, page, section, text, write)
 from common import site_path as _site_path
+from landing import anchor_nav, info_cards
 
 
 def site_path(href):
@@ -43,6 +44,28 @@ ARTICLES = {
     'viewpoint-real-estate-credit-strategies':
         '/viewpoints/private-markets/real-estate-credit-strategies-targeted-solutions-for-a-shifting',
 }
+# wave 2: every viewpoint linked from a migrated page (captures in pages/wave2/, fetched in-page
+# as server HTML). Keys are capture slugs; source slugs differ in case and doubled hyphens.
+WAVE2 = PAGES / 'wave2'
+ARTICLES_WAVE2 = {s: f'/viewpoints/{c}/{s}' for c, slugs in {
+    'equity': ['bank-failures-create-risks-opportunities',
+               'global-healthcare-enhanced-innovation-in-a-post-covid-environment',
+               'how-emerging-market-equities-rebound-rally-could-extend-throughout-2023'],
+    'fixed-income': ['impact-of-trade-tensions-on-canadian-fixed-income',
+                     'powering-subsovereign-investors-with-greater-esg-disclosure'],
+    'market-outlook': ['2026-global-macroeconomic-outlook-clearer-picture-better-growt'],
+    'multi-asset-solutions': ['asset-allocation-views-building-resilience-through-uncertainty',
+                              'asset-allocation-views-paving-the-way-for-growth'],
+    'private-credit': ['opportunistic-credit-in-an-evolving-market-what-is-opportunisti'],
+    # source `why-invest-in-farmland-` (EDS paths cannot end with '-')
+    'private-markets': ['global-water-challenge', 'investing-in-the-power-of-nature',
+                        'timberland-investment-growing-credible-impact', 'value-beyond-forest-products',
+                        'why-invest-in-farmland', 'why-invest-sustainably-managed-timberland'],
+    'sustainability': ['adaptation-is-resilience-assessing-physical-climate-risk-in-can',
+                       'the-continuing-evolution-of-investment-stewardship'],
+}.items() for s in slugs}
+LEGAL_WAVE2 = ['global-legal-terms', 'global-privacy-policy', 'global-social-media-terms',
+               'dashboard-user-agreement']
 PRESS = {
     'press-release-comvest-record-fund-raise':
         '/about-us/press-releases/manulife-comvest-credit-partners-announces-record-fund-raise-of-5-4-billion',
@@ -71,8 +94,8 @@ def iso(date_text):
     return datetime.strptime(' '.join(date_text.split()), '%B %d, %Y').strftime('%Y-%m-%d')
 
 
-def capture_json(slug_name):
-    return json.loads((PAGES / f'{slug_name}.json').read_text())
+def capture_json(slug_name, folder=PAGES):
+    return json.loads((folder / f'{slug_name}.json').read_text())
 
 
 SVG_LIMIT = 40 * 1024  # the EDS content bus rejects larger SVGs (preview answers 409)
@@ -97,6 +120,8 @@ def small_svgs(html_doc):
 def tidy(html_doc):
     """Drop empty inline wrappers the source CMS leaves behind (<strong></strong>, <sup> </sup>)."""
     html_doc = small_svgs(html_doc)
+    # site_path keeps a trailing '-' that EDS cannot serve (source `why-invest-in-farmland-`)
+    html_doc = re.sub(r'href="(/[^"#?]*?)-+"', r'href="\1"', html_doc)
     for _ in range(2):
         html_doc = re.sub(r'<(strong|em|sup|sub|u)>(\s|&nbsp;|\xa0)*</\1>', r'\2' if False else ' ', html_doc)
     return re.sub(r' +(</p>)', r'\1', html_doc)
@@ -260,7 +285,7 @@ def promo_banner(banner, variant='navy'):
 def landing_image(node):
     """landingImage2 (chart card) -> default content: title paragraph, picture, source caption."""
     out = []
-    content = node.select_one('.landingImage2__content')
+    content = node.select_one('.landingImage2__content, .landingimage__content')
     if content and text(content):
         out.append(clean(content))
     img = node.select_one('img')
@@ -285,12 +310,67 @@ def fine_print(node):
     return bool(smalls) and len(' '.join(text(s) for s in smalls)) >= len(text(node)) - 2
 
 
+def landing_cta(node):
+    """landingCta (thumbnail, copy, download link) -> Columns [picture] [copy, link]."""
+    img = node.select_one('img')
+    a = node.select_one('a.cta-module__link')
+    copy = clean(node.select_one('.cta-module__content'))
+    if a:
+        copy += p(f'<a href="{esc(site_path(a.get("href")))}">{esc(text(a))}</a>')
+    return block('columns', [[image(img.get('src'), img.get('alt', '')), copy] if img else [copy]])
+
+
+def table_block(node):
+    """table2 -> Table (row-header[, header]): one block row per table row (DA turns a raw
+    <table> into a block named after its first cell, so tables are authored as blocks)."""
+    main = node.select_one('.table2__main') or node
+    mods = ' '.join(main.get('class', []))
+    variants = ['header', 'row-header'] if 'headerRowColumn' in mods else (
+        ['row-header'] if 'headerColumn' in mods else ['header'] if 'headerRow' in mods else [])
+    rows = []
+    for tr in node.select('tr'):
+        cells = []
+        for td in tr.select(':scope > td, :scope > th'):
+            inner = clean(td)
+            cells.append(inner if inner.startswith('<') else p(inner))
+        rows.append(cells)
+    return block(f'table ({", ".join(variants)})' if variants else 'table', rows)
+
+
 def article_body(content):
-    """viewpoint-content children -> list of (kind, html). kind: 'default' | 'block' | 'fine'."""
+    """viewpoint-content children -> list of (kind, html). kind: 'default' | 'block' | 'fine' |
+    'nav' (own section) | 'break' (html = Anchor id of the next section) | 'divider'."""
     out = []
     for child in content.find_all(recursive=False):
         classes = child.get('class') or []
-        if fine_print(child):
+        column = child.select_one(':scope > .column-container__container > .column-container__column')
+        if 'column-container' in classes and column and not child.select_one('.simpleBanner') \
+                and not fine_print(child):
+            out.extend(article_body(column))  # single reading column: walk its components
+        elif not text(child) and not child.select_one('img') and not ({'sectionBreak', 'divider'} & set(classes)):
+            continue  # strategyTag and other empty shells
+        elif 'innerNavigationBar' in classes:
+            nav = re.sub(r'href="#([^"]+)"', lambda m: f'href="#{slug(m.group(1))}"', anchor_nav(child))
+            out.append(('nav', nav))
+        elif 'sectionBreak' in classes:
+            target = child.select_one('[id]')
+            if target:
+                out.append(('break', slug(target['id'])))
+        elif 'divider' in classes:
+            out.append(('divider', ''))
+        elif 'marketoForm' in classes:
+            continue  # client-rendered Marketo form (no fields in the server HTML; ADR-005)
+        elif 'table2' in classes:
+            out.append(('block', table_block(child)))
+        elif 'infoContainer' in classes:
+            out.append(('block', info_cards(child)))
+        elif 'landingCta' in classes:
+            out.append(('block', landing_cta(child)))
+        elif 'viewpointDisclaimer' in classes:
+            label = text(child.select_one('.viewpoint-disclaimer__toggle'))
+            body = clean(child.select_one('.viewpoint-disclaimer__content'))
+            out.append(('block', block('disclosure collapsible', [[p(esc(label)), body]])))
+        elif fine_print(child):
             html_part = clean(child).strip()
             out.append(('fine', html_part if html_part.startswith('<p') else p(html_part)))
         elif 'disclosures' in classes:
@@ -298,7 +378,7 @@ def article_body(content):
                 out.append(('block', disclosure(disc)))
         elif child.select_one('.simpleBanner'):
             out.append(('block', promo_banner(child.select_one('.simpleBanner'))))
-        elif 'landingImage2' in classes:
+        elif {'landingImage2', 'landingImage'} & set(classes):
             out.append(('default', landing_image(child)))
         elif 'image' in classes:
             img = child.select_one('img')
@@ -320,9 +400,44 @@ def related_block(soup):
     return f'<h2>Related viewpoints</h2>{block("article-cards related", rows)}'
 
 
-def import_article(slug_name, path):
-    soup = load(f'pages/{slug_name}.main.html')
-    cap = capture_json(slug_name)
+def body_sections(body):
+    """Group body parts into sections: fine print in its own `fine-print` section, anchor nav in
+    its own section, `sectionBreak` ids as Section Metadata Anchor, dividers as the `divider`
+    style on the section before the break."""
+    groups = []
+
+    def new(style=None, extra=None):
+        groups.append({'style': list(style or []), 'parts': [], 'extra': extra})
+
+    for kind, html_part in body:
+        if kind == 'break':
+            new(extra={'Anchor': html_part})
+        elif kind == 'divider':
+            if groups and groups[-1]['parts'] and 'divider' not in groups[-1]['style']:
+                groups[-1]['style'].append('divider')
+            new()
+        elif kind == 'nav':
+            new()
+            groups[-1]['parts'].append(html_part)
+            new()
+        else:
+            fine = kind == 'fine'
+            if not groups:
+                new()
+            cur = groups[-1]
+            if not cur['parts']:
+                if fine and 'fine-print' not in cur['style']:
+                    cur['style'].append('fine-print')
+            elif ('fine-print' in cur['style']) != fine:
+                new(['fine-print'] if fine else None)
+            groups[-1]['parts'].append(html_part)
+    return [section(''.join(g['parts']), style=', '.join(g['style']) or None, extra=g['extra'])
+            for g in groups if g['parts']]
+
+
+def import_article(slug_name, path, folder=PAGES):
+    soup = BeautifulSoup((folder / f'{slug_name}.main.html').read_text(), 'html.parser')
+    cap = capture_json(slug_name, folder)
     header = soup.select_one('.viewpoint-detail__header')
     date = header.select_one('time').get('datetime')
     h1 = text(header.select_one('h1'))
@@ -334,18 +449,10 @@ def import_article(slug_name, path):
              for s in side.select('.viewpoint-links')}
     body = article_body(soup.select_one('.viewpoint-content'))
 
-    # sections: header | body (blocks inline, default content between; fine print in its own
-    # `fine-print` section) | related + tags footer
-    groups = []
-    for kind, html_part in body:
-        fine = kind == 'fine'
-        if groups and groups[-1][0] == fine:
-            groups[-1][1].append(html_part)
-        else:
-            groups.append((fine, [html_part]))
+    # sections: header | body (blocks inline, default content between) | related + tags footer
     sections = [
         section(f'<h1>{esc(h1)}</h1>', p(esc(summary))),
-        *[section(''.join(parts), style='fine-print' if fine else None) for fine, parts in groups],
+        *body_sections(body),
         section(related_block(soup)) if soup.select('.related-viewpoints .article-kicker') else '',
         section(fragment_link(FRAGMENT_TAGS)),
     ]
@@ -548,20 +655,35 @@ def import_search():
     return write(out('/search'), page([section(listing)], meta))
 
 
-def import_legal():
-    soup = load('pages/important-information.main.html')
-    cap = capture_json('important-information')
-    body = clean(soup.select_one('.text'))
-    # the source's page title is an empty-anchor H2; it is the page's only heading -> H1
+def import_legal_page(slug_name, path, folder=PAGES):
+    """Archetype K (Important information, global legal terms…): the page's .text components in
+    one section at the source's measure; the first heading (H2 in the source) becomes the H1."""
+    soup = BeautifulSoup((folder / f'{slug_name}.main.html').read_text(), 'html.parser')
+    cap = capture_json(slug_name, folder)
+    body = ''.join(clean(t) for t in soup.select('.text'))
+    # the page title is an H2 in the source -> H1; Important information's is an empty anchor
+    # (shown underlined), kept as <u>
+    underline = bool(soup.select_one('.text h2 a'))
     body = re.sub(r'^<h2>(.*?)</h2>',
-                  lambda m: '<h1><strong>' + re.sub(r'</?(a|strong)>', '', m.group(1)).strip() + '</strong></h1>',
+                  lambda m: '<h1>' + ('<u>' if underline else '') + '<strong>'
+                  + re.sub(r'</?(a|strong)>', '', m.group(1)).strip() + '</strong>'
+                  + ('</u>' if underline else '') + '</h1>',
                   body, count=1, flags=re.S)
+    # measure: bare text = 600px column, an 8-of-12 column = `narrow`, full width = none
+    column = soup.select_one('.column-container__column')
+    style = 'narrow-center' if column is None else (
+        'narrow' if 'column-container__column--qw-8' in column.get('class', []) else None)
     body = re.sub(r'<strong>\s*</strong>', ' ', body)
     # legal pages use the article template's `legal` type (reading measure, title band, plain links)
     legal = {'Template': 'article', 'Type': 'legal'}
-    write('/important-information', tidy(page([section(body, style='narrow-center')],
-                                         {'Title': strip_title(cap['title']),
-                                          'Description': cap.get('description', ''), **legal})))
+    return write(path, tidy(page([section(body, style=style)],
+                                 {'Title': strip_title(cap['title']),
+                                  'Description': cap.get('description') or '', **legal})))
+
+
+def import_legal():
+    import_legal_page('important-information', '/important-information')
+    legal = {'Template': 'article', 'Type': 'legal'}
     soup = load('pages/accessibility.main.html')
     cap = capture_json('accessibility')
     title = text(soup.select_one('.richtitle__text'))
@@ -622,6 +744,8 @@ def main():
             job()
         return
     jobs = [(path, lambda s=s, pth=path: import_article(s, pth)) for s, path in ARTICLES.items()]
+    jobs += [(path, lambda s=s, pth=path: import_article(s, pth, WAVE2)) for s, path in ARTICLES_WAVE2.items()]
+    jobs += [(f'/{s}', lambda s=s: import_legal_page(s, f'/{s}', WAVE2)) for s in LEGAL_WAVE2]
     jobs += [(path, lambda s=s, pth=path: import_press(s, pth)) for s, path in PRESS.items()]
     jobs += [(FRAGMENT_TAGS, tag_fragment), ('/viewpoints', import_viewpoints_hub),
              ('/viewpoints/all', import_viewpoints_all), ('/about-us/press-releases', import_press_listing),

@@ -31,8 +31,10 @@ metadata date above the H1, and for `Type: article` adds a generated `<aside>`: 
 (photo, name, position, company, Read bio), asset-manager logo card, share links (LinkedIn,
 Facebook, X, email, copy link, print/download), category and tag links into
 `/viewpoints/all?category=…|tags=…`. `Type: press` keeps the full-width press layout (32px title, date band, side column as its own
-section). `Type: legal` gives the legal layout (600px column for Important information, title band
-for Accessibility). Section style `fine-print` renders the source's 13.28px small print (DA drops
+section). `Type: legal` gives the legal layout: a title followed by text in one section is 32/40 bold
+(`<u>` where the source underlines it, Important information); section style `narrow-center` =
+the source's 600px column, `narrow` = its centred 8-of-12 column (75%, full width ≤800px), none =
+full width; a title alone in its section (Accessibility) is the display-size title band. Section style `fine-print` renders the source's 13.28px small print (DA drops
 `<small>`).
 ≥1100px: content column + 416px sidebar; below: the sidebar follows the body.
 
@@ -53,6 +55,7 @@ button below 1100px; `Press List` swaps its tabs for a labelled native `<select>
 | `Case Study List` | `Source`, `Page Size` | Sort (Newest/Oldest/A–Z/Z–A, native select), tag pills toggle filters, View more. |
 | `Browse By` | `[Authors][link to /data/authors.json]`, `[Categories][ul]`, `[Tags][ul]` | Tabs from the row labels; author directory generated from the sheet with a sort select; 9 items + View more. |
 | `Tag Cloud` (`inline`) | `[h2]`, `[ul of links]` | `<details open>` "All Tags" in 4/3/2 columns; `inline` = "More insight" link bar. Plain container in Canvas. |
+| `Table` (`header`, `row-header`) | one block row per table row, ≤4 cells | Source `table2` cards in viewpoints (DA turns a raw `<table>` into a block named after its first cell, so tables are authored as this block). Rows stay authored divs with ARIA `table/row/cell` roles and a CSS grid (Canvas edits in place); white shadowed card, 48px inset, grey row rules; scrolls sideways inside the card on phones. |
 | `Search` | `[h1]` (visually hidden), optional `Source Index` | `?q=` (and legacy `#q=`); scores title > tags/category > authors > description; facets type/category/tags/author (checkboxes with counts); sort; 10/25/50 per page; pager. |
 
 ## Placeholder keys (`/placeholders`, Key → default Text)
@@ -85,6 +88,17 @@ browser live in `.captures/manulifeim-tw/pages/data/` (`case-studies.json`,
 `viewpoints-filters.json`, `press-releases-all.json`). Paths collapse repeated hyphens (EDS
 serves `credit--relative` as `credit-relative`); SVGs over 40 KB use their svgo `-min.svg` twins
 (the content bus rejects larger SVGs).
+
+Wave 2 (`ARTICLES_WAVE2`, `LEGAL_WAVE2`) reads `pages/wave2/` captures (server HTML fetched
+in-page). Extra source components: `landingImage` (as `landingImage2`), `innerNavigationBar` →
+`Anchor Nav` in its own section, `sectionBreak` → Section Metadata `Anchor` (ids slugged, e.g.
+`oil-` → `oil`), `divider` → `divider` style, `infoContainer` → `Cards (info, cols-2)` (landing's
+converter), `table2` → `Table`, `landingCta` → `Columns [picture][copy, link]`,
+`viewpointDisclaimer` → `Disclosure (collapsible)`; single-column `column-container`s are walked;
+Marketo forms (client-rendered, no fields in the HTML) and empty `strategyTag`s are dropped.
+Charts whose outlined-text SVG stays over 40 KB after svgo are uploaded as 2× PNG rasters and
+mapped directly in the media manifest (`media/wave2-media.json` lists them). Links ending in
+`-` lose it (source `why-invest-in-farmland-` → `/viewpoints/private-markets/why-invest-in-farmland`).
 
 ```sh
 da --qmd --format json content fix-sections <file>
