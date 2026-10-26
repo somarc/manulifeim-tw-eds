@@ -19,18 +19,21 @@ It is a proof of concept that lives on the `migration` branch (intentionally not
 - **Shared chrome:** the 80px rail with the Capabilities fly-out, the top bar (search, region, login,
   register), the session-dismissible alert, the footer, and the Taiwan attestation dialog
   (accepted with a text hash, like the source).
-- **Every archetype:** the homepage; four capability landings plus the hub; sustainability,
-  stewardship, about and contact; three viewpoint articles on the article template; the viewpoints
-  hub and the filterable listing; four press releases plus the listing; case studies; search; legal
-  pages.
-- **Data:** `/data/content-index` (search and listings; see ADR-001), `/data/authors` (217),
+- **Every archetype (45 pages):** the homepage; four capability landings plus the hub;
+  sustainability, stewardship, about and contact; 20 viewpoint articles on the article template
+  (every viewpoint linked from a migrated page); the viewpoints hub and the filterable listing; four
+  press releases plus the listing; case studies; search; six legal pages.
+- **Data:** `/data/content-index` (45 rows; search and listings; see ADR-001), `/data/authors` (217),
   `/data/case-studies` (62), and `/placeholders` (81 UI labels).
 - **Experience Workspace:** `ew.enabled`, `editor.hidePublish=/` (no Publish card),
   `ew.canvasDefaultView=layout`, `ew.wysiwygBranch` → `migration`, plus a generated library: blocks with real variants, options
   dropdowns, templates and icons.
 
-Not migrated: the remaining sitemap URLs (mostly ~700 viewpoint articles and ~160 press releases, which
-reuse these templates and importers), Coveo's PDF and fund search, live Marketo submissions, and
+Quality gates (branch preview): Lighthouse mobile 100/100/100 on the homepage (LCP 1.0 s, TBT 0, CLS
+0.02); `da audit full` 0 errors; block contracts 24/24 against the code bus; lint clean.
+
+Not migrated: the remaining sitemap URLs (mostly ~680 viewpoint articles, ~155 press releases and 94
+strategy pages, which reuse these templates and importers), Coveo's PDF and fund search, live Marketo submissions, and
 login/registration. Unmigrated links land on a 404 page that names the gap and links to the original.
 
 ## Development
