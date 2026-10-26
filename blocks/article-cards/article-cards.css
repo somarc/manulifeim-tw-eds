@@ -401,3 +401,8 @@ html[quick-edit] .article-cards > [data-config] p {
     flex-basis: auto;
   }
 }
+
+/* list mode shows authors without photos; card mode adds them (source behaviour) */
+.article-cards.toggle .is-list .teaser-author-photo {
+  display: none;
+}

@@ -217,7 +217,7 @@ export function authorList(ids, authors, { photos = false, links = false } = {})
     const href = `/viewpoints/all?authors=${encodeURIComponent(a.id)}`;
     const name = links
       ? el('a', { href, class: 'teaser-author-name' }, a.name)
-      : el('strong', { class: 'teaser-author-name' }, `${a.name},`);
+      : el('strong', { class: 'teaser-author-name' }, a.position ? `${a.name},` : a.name);
     return el(
       'li',
       { class: 'teaser-author' },
