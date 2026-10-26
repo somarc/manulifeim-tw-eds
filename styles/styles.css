@@ -114,15 +114,15 @@ body.appear {
   display: block;
 }
 
+header {
+  min-height: var(--header-height);
+}
+
 /* the fixed left rail belongs to the header block; everything else is offset by it */
 body > header,
 body > main,
 body > footer {
   margin-inline-start: var(--rail-width);
-}
-
-header {
-  min-height: var(--header-height);
 }
 
 h1,
