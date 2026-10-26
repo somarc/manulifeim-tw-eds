@@ -258,10 +258,16 @@ export { loadScript };
 const params = new URLSearchParams(window.location.search);
 if (['on', 'true'].includes(params.get('quick-edit'))) {
   document.documentElement.setAttribute('quick-edit', 'true');
-  // Canvas supplies its parent-controlled MessageChannel; no credentials here.
-  // eslint-disable-next-line import/no-unresolved
-  const { default: loadQuickEdit } = await import('https://da.live/nx/public/plugins/quick-edit/quick-edit.js');
-  await loadQuickEdit(undefined, loadPage);
+  // Canvas supplies its parent-controlled MessageChannel; no credentials here. Outside the
+  // Canvas parent the plugin can fail to import; the page must still decorate.
+  try {
+    // eslint-disable-next-line import/no-unresolved
+    const { default: loadQuickEdit } = await import('https://da.live/nx/public/plugins/quick-edit/quick-edit.js');
+    await loadQuickEdit(undefined, loadPage);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('quick-edit unavailable outside Canvas', error);
+  }
 }
 
 loadPage();

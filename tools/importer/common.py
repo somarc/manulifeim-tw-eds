@@ -28,8 +28,9 @@ CAPTURES = Path('/Users/mhess/aem/eds-labs/.captures/manulifeim-tw')
 REPO = Path(__file__).resolve().parents[2]
 MEDIA_MANIFEST = CAPTURES / 'media' / 'media-manifest.json'
 
+# <small> is not kept by DA/aem.page (use a block variant such as Disclosure (small) instead)
 SEMANTIC = {'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'strong', 'em',
-            'sup', 'sub', 'small', 'br', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'td',
+            'sup', 'sub', 'br', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'td',
             'th', 'picture', 'img', 'pre', 'code', 'hr', 'u', 's'}
 RENAME = {'b': 'strong', 'i': 'em'}
 KEEP_ATTRS = {'href', 'src', 'alt', 'colspan', 'rowspan', 'title'}
@@ -135,7 +136,7 @@ def clean(node, keep_root=False):
             el['href'] = site_path(el.get('href', ''))
             if not el['href']:
                 el.unwrap()
-    out = ''.join(str(c) for c in (node.contents if not keep_root else [node]))
+    out = node.decode() if keep_root else node.decode_contents()
     out = re.sub(r'(<br/?>\s*)+(</(?:h\d|p)>)', r'\2', out)
     out = re.sub(r'(<(?:h\d|p)>)\s*(<br/?>\s*)+', r'\1', out)
     out = re.sub(r'<p>\s*(&nbsp;|\xa0)?\s*</p>', '', out)

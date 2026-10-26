@@ -106,8 +106,12 @@ body {
   font-family: var(--font-sans);
   font-size: var(--font-size-body);
   line-height: var(--line-height-body);
-  letter-spacing: var(--letter-spacing);
   -webkit-font-smoothing: antialiased;
+}
+
+/* -0.02em must resolve against each element's own size, so it is set per element, not inherited */
+:where(body, body *) {
+  letter-spacing: var(--letter-spacing);
 }
 
 body.appear {
@@ -133,7 +137,7 @@ h5,
 h6 {
   margin-block: 0 16px;
   font-family: var(--font-sans);
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: var(--letter-spacing);
   scroll-margin-top: 24px;
 }
@@ -141,6 +145,7 @@ h6 {
 h1 {
   font-size: var(--font-size-display);
   line-height: var(--line-height-display);
+  font-weight: 300;
 }
 
 h2 {
@@ -166,7 +171,6 @@ h6 {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  letter-spacing: 0;
 }
 
 p,
@@ -246,7 +250,8 @@ main > .section {
   padding: var(--section-padding-block) var(--section-padding-inline);
 }
 
-main > .section:first-of-type:has(> .hero-container, > .carousel-container) {
+main > .section.carousel-container:first-of-type,
+main > .section.hero-container:first-of-type {
   padding: 0;
 }
 
@@ -299,7 +304,7 @@ button.button {
   color: var(--color-white);
   font-family: var(--font-sans);
   font-size: var(--font-size-body);
-  line-height: 20px;
+  line-height: 18px;
   font-style: normal;
   font-weight: 700;
   letter-spacing: var(--letter-spacing);
@@ -350,6 +355,7 @@ main > .section.intro > .default-content-wrapper {
 main > .section.display :is(h1, h2) {
   font-size: var(--font-size-display);
   line-height: var(--line-height-display);
+  font-weight: 300;
 }
 
 /* title row: heading on the left, the first CTA link on the right */
@@ -375,7 +381,7 @@ main > .section.title-row > .default-content-wrapper > :first-child + * {
 }
 
 main > .section.title-row > .default-content-wrapper > :nth-child(n + 3) {
-  margin-block-start: 32px;
+  margin-block-start: 64px;
 }
 
 /* narrow reading measure (legal, press releases) */
@@ -429,6 +435,7 @@ main > .section.spacious {
 @media (width <= 800px) {
   main > .section.intro > .default-content-wrapper {
     width: 100%;
+    padding-inline: 24px;
   }
 
   main > .section.overlap {
