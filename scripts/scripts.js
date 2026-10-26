@@ -5,11 +5,13 @@ import {
   decorateSections,
   decorateBlocks,
   decorateTemplateAndTheme,
+  getMetadata,
+  toClassName,
   waitForFirstImage,
   loadSection,
   loadSections,
   loadCSS,
-  buildBlock,
+  loadScript,
 } from './aem.js';
 
 if (window.trustedTypes && window.trustedTypes.createPolicy) {
@@ -37,6 +39,41 @@ if (window.trustedTypes && window.trustedTypes.createPolicy) {
   });
 }
 
+/** True inside DA Canvas / quick-edit: decoration must keep authored nodes editable. */
+export function isAuthoring() {
+  return document.documentElement.hasAttribute('quick-edit');
+}
+
+/** Site placeholders (DA sheet /placeholders.json), fetched once. */
+let placeholdersPromise;
+export function fetchPlaceholders() {
+  placeholdersPromise ||= fetch('/placeholders.json')
+    .then((resp) => (resp.ok ? resp.json() : { data: [] }))
+    .then(({ data = [] }) => Object.fromEntries(
+      data.filter((row) => row.Key).map((row) => [row.Key, row.Text]),
+    ))
+    .catch(() => ({}));
+  return placeholdersPromise;
+}
+
+/**
+ * Content index rows, fetched once per sheet. The native query index only reflects published
+ * (aem.live) content and this site is preview-only, so the source is the DA-authored sheet
+ * /data/content-index (same columns as the configured native index; see docs/DECISIONS.md).
+ */
+export const CONTENT_INDEX = '/data/content-index.json';
+const indexCache = new Map();
+export function fetchIndex(sheet = '') {
+  const url = `${CONTENT_INDEX}?limit=2000${sheet ? `&sheet=${sheet}` : ''}`;
+  if (!indexCache.has(url)) {
+    indexCache.set(url, fetch(url)
+      .then((resp) => (resp.ok ? resp.json() : { data: [] }))
+      .then(({ data = [] }) => data)
+      .catch(() => []));
+  }
+  return indexCache.get(url);
+}
+
 /**
  * load fonts.css and set a session storage flag
  */
@@ -50,37 +87,14 @@ async function loadFonts() {
 }
 
 /**
- * Turns `/widgets/...` links into widget blocks.
- * @param {Element} main The container element
- */
-function buildWidgetAutoBlocks(main) {
-  const widgetLinks = [...main.querySelectorAll('a[href*="/widgets/"]')];
-  widgetLinks.forEach((link) => {
-    if (link.closest('.widget')) return;
-    const newLink = link.cloneNode(true);
-    const widgetBlock = buildBlock('widget', { elems: [newLink] });
-    const p = link.closest('p');
-    if (
-      p
-      && p.querySelectorAll('a').length === 1
-      && p.querySelector('a') === link
-      && p.textContent.trim() === link.textContent.trim()
-    ) {
-      p.replaceWith(widgetBlock);
-    } else {
-      link.replaceWith(widgetBlock);
-    }
-  });
-}
-
-/**
  * Builds all synthetic blocks in a container element.
+ * Fragment links are resolved by the fragment block; nothing else is auto-blocked site-wide.
  * @param {Element} main The container element
  */
 function buildAutoBlocks(main) {
   try {
-    // auto load `*/fragments/*` references
-    const fragments = [...main.querySelectorAll('a[href*="/fragments/"]')].filter((f) => !f.closest('.fragment'));
+    const fragments = [...main.querySelectorAll('a[href*="/fragments/"]')]
+      .filter((f) => !f.closest('.fragment') && f.closest('p')?.textContent.trim() === f.textContent.trim());
     if (fragments.length > 0) {
       // eslint-disable-next-line import/no-cycle
       import('../blocks/fragment/fragment.js').then(({ loadFragment }) => {
@@ -96,7 +110,6 @@ function buildAutoBlocks(main) {
         });
       });
     }
-    buildWidgetAutoBlocks(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
@@ -104,55 +117,63 @@ function buildAutoBlocks(main) {
 }
 
 /**
- * Decorates formatted links to style them as buttons.
+ * Link conventions in default content and blocks:
+ * - **bold link** alone in a paragraph: primary (green) button
+ * - _italic link_ alone in a paragraph: secondary (outline) button
+ * - plain link alone in a paragraph: the source's circled-arrow CTA link
+ * Classes go on the link and its paragraph; the authored nodes are never replaced.
  * @param {HTMLElement} main The main container element
  */
-function decorateButtons(main) {
+export function decorateButtons(main) {
   main.querySelectorAll('p a[href]').forEach((a) => {
-    a.title = a.title || a.textContent;
     const p = a.closest('p');
     const text = a.textContent.trim();
-
-    // quick structural checks
-    if (a.querySelector('img') || p.textContent.trim() !== text) return;
-
-    // skip URL display links
-    try {
-      if (new URL(a.href).href === new URL(text, window.location).href) return;
-    } catch { /* continue */ }
-
-    // require authored formatting for buttonization
+    if (!text || a.querySelector('img, picture') || p.textContent.trim() !== text) return;
+    if (p.querySelectorAll('a').length > 1) return;
     const strong = a.closest('strong');
     const em = a.closest('em');
-    if (!strong && !em) return;
-
-    p.className = 'button-wrapper';
-    a.className = 'button';
-    if (strong && em) { // high-impact call-to-action
-      a.classList.add('accent');
-      const outer = strong.contains(em) ? strong : em;
-      outer.replaceWith(a);
-    } else if (strong) {
-      a.classList.add('primary');
-      strong.replaceWith(a);
+    if (strong && p.contains(strong)) {
+      p.classList.add('button-wrapper');
+      a.classList.add('button', 'primary');
+    } else if (em && p.contains(em)) {
+      p.classList.add('button-wrapper');
+      a.classList.add('button', 'secondary');
     } else {
-      a.classList.add('secondary');
-      em.replaceWith(a);
+      p.classList.add('link-cta-wrapper');
+      a.classList.add('link-cta');
     }
   });
 }
 
 /**
- * Decorates the main element.
+ * Decorates the main element. Idempotent: Canvas may run it again on a fresh body.
  * @param {Element} main The main element
  */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
+  if (main.dataset.decorated) return;
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
   decorateBlocks(main);
   decorateButtons(main);
+  main.dataset.decorated = 'true';
+}
+
+/** Optional page template: /templates/<name>/<name>.{css,js}. */
+async function loadTemplate(doc, main) {
+  const template = toClassName(getMetadata('template'));
+  if (!template) return;
+  try {
+    const [, mod] = await Promise.all([
+      loadCSS(`${window.hlx.codeBasePath}/templates/${template}/${template}.css`),
+      import(`../templates/${template}/${template}.js`).catch(() => null),
+    ]);
+    if (mod?.default) await mod.default(main, doc);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`template ${template} failed`, error);
+  }
 }
 
 /**
@@ -160,12 +181,21 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  document.documentElement.lang = 'en';
+  doc.documentElement.lang = 'en';
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
+    main.id ||= 'main';
+    if (!doc.querySelector('body > .skip-link')) {
+      const skip = doc.createElement('a');
+      skip.className = 'skip-link';
+      skip.href = `#${main.id}`;
+      skip.textContent = 'Skip to main content';
+      doc.body.prepend(skip);
+    }
+    await loadTemplate(doc, main);
     decorateMain(main);
-    document.body.classList.add('appear');
+    doc.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);
   }
 
@@ -184,16 +214,20 @@ async function loadEager(doc) {
  * @param {Element} doc The container element
  */
 async function loadLazy(doc) {
-  loadHeader(doc.querySelector('body > header'));
-
   const main = doc.querySelector('main');
-  await loadSections(main);
+  // shared documents (/nav, /footer, /fragments/*) are edited standalone, without recursive chrome
+  const isSharedDocument = /^\/(nav|footer|fragments\/)/.test(window.location.pathname);
+  const header = doc.querySelector('body > header');
+  const footer = doc.querySelector('body > footer');
+  const chrome = isSharedDocument ? [] : [header && loadHeader(header)];
+
+  await Promise.all([loadSections(main), ...chrome]);
 
   const { hash } = window.location;
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  loadFooter(doc.querySelector('body > footer'));
+  if (!isSharedDocument && footer) await loadFooter(footer);
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
@@ -204,14 +238,30 @@ async function loadLazy(doc) {
  * without impacting the user experience.
  */
 function loadDelayed() {
+  if (!isAuthoring()) {
+    // the source's regional attestation; skipped in Canvas so authors can edit
+    import('./disclaimer.js').then(({ default: gate }) => gate()).catch(() => {});
+  }
   import('./consent-check.js');
-  // load anything that can be postponed to the latest here
 }
 
-async function loadPage() {
-  await loadEager(document);
-  await loadLazy(document);
+/** Canvas calls this same, fully awaited path after each full body replacement. */
+export async function loadPage(doc = document) {
+  await loadEager(doc);
+  await loadLazy(doc);
+  doc.body.dataset.pageReady = 'true';
   loadDelayed();
+}
+
+export { loadScript };
+
+const params = new URLSearchParams(window.location.search);
+if (['on', 'true'].includes(params.get('quick-edit'))) {
+  document.documentElement.setAttribute('quick-edit', 'true');
+  // Canvas supplies its parent-controlled MessageChannel; no credentials here.
+  // eslint-disable-next-line import/no-unresolved
+  const { default: loadQuickEdit } = await import('https://da.live/nx/public/plugins/quick-edit/quick-edit.js');
+  await loadQuickEdit(undefined, loadPage);
 }
 
 loadPage();
