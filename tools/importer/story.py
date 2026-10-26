@@ -4,7 +4,7 @@
 Every number is computed when the page is generated: QMD receipts (tools/receipts-summary.py),
 the DA source tree (`da content tree`), the media and sheets in the DA workspace, the Git log and
 the block directories. Prose names the decisions recorded in docs/DECISIONS.md. Output goes to
-the DA workspace; upload + preview are separate da-cli operations.
+the DA workspace; upload + preview are separate, reviewed CLI operations.
 """
 import html
 import json
@@ -96,14 +96,14 @@ def main():
         ['<picture><img src="/media/digital-hero-image-2000x1200.jpg" alt=""></picture>'],
         ['<h1>How we built <em>this</em></h1>'
          '<p>manulifeim.com/institutional/tw/en, rebuilt on AEM Edge Delivery Services and authored in '
-         'Experience Workspace by one lead agent and ten specialists in FluffyJaws Dev Studio, all '
-         'driving da-cli. Every remote operation left a receipt.</p>'
+         'Experience Workspace by one lead agent and ten specialists in FluffyJaws Dev Studio. Every '
+         'remote operation was reviewed before it ran and left a receipt.</p>'
          '<p><strong><a href="#blueprint">Explore the blueprint</a></strong></p>'],
     ]))
     nav = section(block('anchor-nav', [[
         '<ul><li><a href="#brief">The brief</a></li><li><a href="#team">The team</a></li>'
         '<li><a href="#blueprint">The blueprint</a></li><li><a href="#workspace">Experience Workspace</a></li>'
-        '<li><a href="#caught">What da-cli caught</a></li><li><a href="#next">Boundaries</a></li></ul>']]))
+        '<li><a href="#caught">What we caught</a></li><li><a href="#next">Boundaries</a></li></ul>']]))
 
     brief = section(
         '<h2>One brief. <em>Every</em> step on the record.</h2>'
@@ -115,7 +115,7 @@ def main():
             stat(ev['pages'], 'pages migrated and previewed, across 11 source archetypes'),
             stat(ev['blocks'], 'block directories, all lint-clean'),
             stat(ev['media'], 'images fetched in a real browser and stored in DA'),
-            stat(r['receipts'], 'journaled da-cli receipts in the QMD evidence trail'),
+            stat(r['receipts'], 'journaled operation receipts in the evidence trail'),
             stat(r['committedWrites'], 'reviewed, committed remote writes (dry-run first)'),
             stat(f"{not_ok}", 'failed or refused outcomes, kept in the trail, not hidden'),
             stat(ev['commits'], f"focused commits on the migration branch (head {ev['head']})"),
@@ -150,7 +150,8 @@ def main():
                 '1,818 sitemap URLs inventoried; 23 representative pages captured.'),
             step('Create the site from a reviewed plan', [
                 'The create spans GitHub, Configuration Service and a checkout. It returned a partial '
-                'outcome (repository created, registration indeterminate), and da-cli refused to guess.'],
+                'outcome (repository created, registration indeterminate), reported as such, so we inspected '
+                'before doing anything else.'],
                 'da --org somarc site create manulifeim-tw-eds --plan \\\n'
                 '  --template adobe/aem-boilerplate --public --content-mode configuration-service\n'
                 'da --org somarc --commit site create manulifeim-tw-eds \\\n'
@@ -168,15 +169,14 @@ def main():
                 '  --da-org somarc --da-repo manulifeim-tw-eds         # → adopted-existing'),
             step('Keep operational state out of Git', [
                 'The checkout holds code only. Hydrated documents, media and receipts live in the external '
-                'workspace da-cli resolves; the importer refuses to write inside the repository.'],
+                'operational workspace; the importer refuses to write inside the repository.'],
                 'da --org somarc --repo manulifeim-tw-eds site pin-target\n'
                 'da --qmd --commit workspace init --yes\n'
                 'da workspace show --format json   # contentRoot outside the checkout'),
             step('Install AEM Code Sync (owner action)', [
                 'Connecting the repository to the code bus is a GitHub App install that only the repository '
                 'owner can approve with a passkey. It is a deliberate human gate, not a tool failure. While it '
-                'was pending, a throwaway local proxy injected head.html so validation never stalled (ADR-006). '
-                'da-cli will name this gate explicitly at site create: somarc/da-cli#576.'],
+                'was pending, a throwaway local proxy injected head.html so validation never stalled (ADR-006).'],
                 '# owner: https://github.com/apps/aem-code-sync/installations/new → somarc/manulifeim-tw-eds\n'
                 'da --qmd site doctor --agent                 # code-bus styles.css: 404 until installed\n'
                 'git push origin migration                    # refs pushed after the install are synced\n'
@@ -199,7 +199,7 @@ def main():
                 'da --commit --qmd preview page /capabilities/fixed-income --yes',
                 'Local code over previewed content: da up --mode runtime --url https://main--…aem.page'),
             step('Search and listings without publishing', [
-                'da-cli\'s guardrail stopped a wrong assumption: the native query index only reflects '
+                'A platform caveat stopped a wrong assumption: the native query index only reflects '
                 'published content, and this site is preview-only. We configured the native index anyway, '
                 'then built a previewed sheet with the same columns by applying that definition to the '
                 'delivered preview HTML (ADR-001).'],
@@ -218,7 +218,7 @@ def main():
                 'and the Publish card is removed site-wide. Every config write is a reviewed dry-run, committed only against its digest.'],
                 'da --qmd site config set --flag ew.enabled=true --flag editor.hidePublish=/ \\\n'
                 '  --flag ew.canvasDefaultView=layout                 # dry-run → reviewDigest\n'
-                '# ew.wysiwygBranch is a first-sheet key: da-cli refuses --flag and asks for --set-sheet\n'
+                '# ew.wysiwygBranch is read from the first sheet, so it is written with --set-sheet\n'
                 'da --qmd site config set --set-sheet flags=flags.json   # + /somarc/manulifeim-tw-eds/=migration\n'
                 'da --commit --qmd site config set … --expected-review-digest sha256:…\n'
                 'python3 tools/importer/build-library.py            # blocks, options, templates, icons\n'
@@ -227,7 +227,7 @@ def main():
                 'da --qmd site config doctor                         # 0 errors',
                 'editor.hidePublish was verified against da-nx source: it is read from the first sheet.'),
             step('Read the receipts', [
-                'Every da-cli invocation ran with --qmd, so each outcome (including the failures) is a typed '
+                'Every operation was journaled, so each outcome (including the failures) is a typed '
                 'receipt in the local QMD vault, searchable without re-running anything.'],
                 'python3 tools/receipts-summary.py\n'
                 "qmd search 'manulifeim-tw-eds site.register'\n"
@@ -258,14 +258,14 @@ def main():
     ]), style='overlap')
 
     caught = section(
-        '<h2>What da-cli <em>caught</em></h2>'
+        '<h2>What we <em>caught</em></h2>'
         '<p>The value is not that nothing went wrong. It is that nothing wrong went silently.</p>',
         block('cards info', [
-            tile('A partial create', 'The repository existed while the registration was "indeterminate". da-cli said so, gave a safe recovery, and refused a blind retry.'),
-            tile('The wrong identity', 'access explain and auth verify-target showed an authenticated principal from another organisation. Re-signing in fixed it; retrying would not have.'),
+            tile('A partial create', 'The repository existed while the registration was "indeterminate". It was reported as such, inspected, and recovered without a blind retry.'),
+            tile('The wrong identity', 'An access check showed an authenticated principal from another organisation. Re-signing in fixed it; retrying would not have.'),
             tile('A live-only index', 'The index caveat (published content only) redirected search to a previewed sheet with the native schema, instead of a silent empty search.'),
             tile('Digest-bound config', 'A second write against a stale review was refused (DA_CONFIG_REVIEW_DRIFT). Read-after-write lag was diagnosed, not papered over.'),
-            tile('A library contract', 'config doctor flagged the Placeholders library row: da-live inserts {{key}} tokens this site never substitutes. We removed the row.'),
+            tile('A library contract', 'A config check flagged the Placeholders library row: Experience Workspace inserts {{key}} tokens this site never substitutes. We removed the row.'),
             tile('Upstream edges', 'Preview rejects SVGs over 40 KB, EDS collapses "--" in paths, and DA drops &lt;small&gt;. Each became an importer rule.'),
         ]),
         style='display', extra={'Anchor': 'caught'})
@@ -288,7 +288,7 @@ def main():
 
     doc = page([hero, nav, brief, team, team_tiles, blueprint, workspace, workspace_tiles, caught, nxt], {
         'Title': 'How we built this | Manulife Investment Management (EDS migration study)',
-        'Description': 'How one lead agent and ten specialists migrated manulifeim.com/institutional/tw/en to AEM Edge Delivery Services and Experience Workspace with da-cli, with every step on the record.',
+        'Description': 'How one lead agent and ten specialists migrated manulifeim.com/institutional/tw/en to AEM Edge Delivery Services and Experience Workspace, with every step on the record.',
         'Image': '<picture><img src="/media/digital-hero-image-2000x1200.jpg" alt=""></picture>',
         'Disclaimer': 'off',
         'Robots': 'noindex, nofollow',
