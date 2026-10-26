@@ -1,0 +1,254 @@
+/*
+ * Disclaimer (Taiwan) attestation dialog, loaded only when scripts/disclaimer.js shows it.
+ * Geometry measured on the source at 1440×900: 900×700 navy box, 48px gutters,
+ * #5E6073 scroll box, 390×56 Cancel / I agree, "Change region" strip at the bottom.
+ */
+
+html.disclaimer-open {
+  overflow: hidden;
+}
+
+dialog.disclaimer {
+  width: min(900px, calc(100vw - 32px));
+  height: min(700px, calc(100dvh - 32px));
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  background-color: var(--color-navy-900);
+  color: var(--color-white);
+  font-family: var(--font-sans);
+  letter-spacing: var(--letter-spacing);
+}
+
+dialog.disclaimer[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+dialog.disclaimer::backdrop {
+  background-color: rgb(40 43 62 / 50%);
+  backdrop-filter: blur(10px);
+}
+
+.disclaimer :focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-navy-900);
+}
+
+.disclaimer-prompt,
+.disclaimer-regions {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.disclaimer-prompt[hidden],
+.disclaimer-regions[hidden] {
+  display: none;
+}
+
+.disclaimer .disclaimer-title {
+  flex: none;
+  margin: 48px;
+  color: var(--color-white);
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 300;
+}
+
+.disclaimer-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 48px;
+  border-block-start: 1px solid var(--color-slate-500);
+}
+
+.disclaimer-text {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-block: 24px;
+  padding: 16px;
+  background-color: var(--color-slate-500);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+.disclaimer-text h3 {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+  font-weight: 400;
+}
+
+.disclaimer-text p {
+  margin: 16px 0 0;
+}
+
+/* the source's button row is 48px tall and its 56px buttons overhang it into the padding */
+.disclaimer-buttons {
+  display: grid;
+  flex: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  height: 48px;
+}
+
+.disclaimer-cancel:any-link,
+.disclaimer-accept {
+  display: grid;
+  place-items: center;
+  height: 56px;
+  margin: 0;
+  padding: 0 22px;
+  border: 2px solid var(--color-navy-900);
+  background-color: var(--color-slate-500);
+  color: var(--color-white);
+  font: 600 var(--font-size-body) / 20px var(--font-sans);
+  letter-spacing: var(--letter-spacing);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.disclaimer-cancel:hover {
+  background-color: var(--color-navy-700);
+  color: var(--color-white);
+}
+
+.disclaimer-accept {
+  border-color: var(--color-green-600);
+  background-color: var(--color-green-600);
+}
+
+.disclaimer-accept:hover {
+  border-color: var(--color-green-700);
+  background-color: var(--color-green-700);
+}
+
+.disclaimer-footer {
+  display: flex;
+  flex: none;
+  justify-content: flex-end;
+  padding: 16px 32px;
+  border-block-start: 1px solid var(--color-slate-500);
+}
+
+.disclaimer .disclaimer-change {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--color-white);
+  font: 700 var(--font-size-small) / var(--line-height-small) var(--font-sans);
+  letter-spacing: var(--letter-spacing);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.disclaimer-change::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  margin: 0 5px 0 8px;
+  background-color: currentcolor;
+  mask: url('../icons/arrow-right.svg') center / contain no-repeat;
+}
+
+.disclaimer-back {
+  flex-direction: row-reverse;
+}
+
+.disclaimer-back::after {
+  margin: 0 8px 0 5px;
+  transform: rotate(180deg);
+}
+
+.disclaimer .disclaimer-change:hover {
+  color: var(--color-green-light);
+  text-decoration: underline;
+}
+
+/* "Change region": the header's location list, inside the dialog */
+.disclaimer-regions-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-block-start: 1px solid var(--color-slate-500);
+  background-color: var(--color-white);
+  color: var(--text-color);
+}
+
+.disclaimer-regions-list h3 {
+  margin: 32px 48px 8px;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: 700;
+}
+
+.disclaimer-regions-list ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  margin: 0;
+  padding: 0 32px;
+  list-style: none;
+}
+
+.disclaimer-regions-list a:any-link {
+  display: block;
+  padding: 12px 16px;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.disclaimer-regions-list a:hover,
+.disclaimer-regions-list a:focus-visible {
+  color: var(--color-green-600);
+  text-decoration: underline;
+}
+
+.disclaimer-regions-list a:focus-visible {
+  box-shadow: none;
+  outline-color: var(--color-green-600);
+  outline-offset: -2px;
+}
+
+@media (width <= 800px) {
+  .disclaimer .disclaimer-title {
+    margin: 24px 16px;
+    font-size: var(--font-size-card-title);
+    line-height: var(--line-height-card-title);
+  }
+
+  .disclaimer-body {
+    padding: 0 16px 16px;
+    border: 0;
+  }
+
+  .disclaimer-text {
+    margin-block: 0 16px;
+  }
+
+  .disclaimer-buttons {
+    gap: 16px;
+  }
+
+  .disclaimer-footer {
+    padding: 8px 16px;
+  }
+
+  .disclaimer-regions-list h3 {
+    margin-inline: 16px;
+  }
+
+  .disclaimer-regions-list ul {
+    padding-inline: 0;
+  }
+}
