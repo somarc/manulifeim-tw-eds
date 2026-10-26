@@ -53,6 +53,7 @@ DESCRIPTIONS = {
     'browse-by': 'Browse viewpoints by author, category or tag.',
     'tag-cloud': 'All tags with article counts from the content index.',
     'search': 'Site search over the content index with facets, sort and pager.',
+    'table': 'A data table: the first row is the header row; one row per table row (source article tables).',
     'blueprint': 'Build steps: one row per step [heading + explanation][commands in a code block + notes].',
 }
 
