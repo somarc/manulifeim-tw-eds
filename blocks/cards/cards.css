@@ -61,9 +61,15 @@
   list-style: disc inside;
 }
 
-/* the "Learn more" / "Download" link row; pinned to the tile bottom where tiles align */
+/* the "Learn more" / "Download" link row; pinned to the tile bottom where tiles align.
+   The source link is a 25px box (21px line + 2px padding), not a 28px text line. */
 .cards .cards-card-body .link-cta-wrapper {
   margin-block-start: 24px;
+  line-height: 0;
+}
+
+.cards .cards-card-body .link-cta-wrapper > a.link-cta {
+  padding-block: 2px;
 }
 
 .cards .cards-card-body .link-cta-wrapper ~ .link-cta-wrapper {
@@ -95,6 +101,11 @@
   padding-block-end: 24px;
 }
 
+/* the source tile copy sits 32px below the illustration's 24px padding */
+:where(.cards:not(.image, .logos)) .cards-card-image + .cards-card-body {
+  margin-block-start: 32px;
+}
+
 .cards:not(.image, .logos) .cards-card-image img {
   width: auto;
   max-height: 125px;
@@ -114,7 +125,16 @@
   line-height: var(--line-height-card-title);
 }
 
-/* image: sustainability tiles, 24px inset 1.93:1 image, 24/30 title, 14/21 text, #E0E0E0 rules */
+/* image: sustainability tiles, 24px inset 185px-high image, 24/30 title, 14/21 text, #E0E0E0 rules */
+
+/* a card container is its own 32px-padded component on the source (as are the title/copy
+   and the card container before it): 64px from the copy or cards above (margins collapse) */
+:where(.default-content-wrapper + .cards-wrapper),
+:where(.cards-wrapper + .cards-wrapper) {
+  margin-block-start: calc(2 * var(--section-padding-block));
+}
+
+
 .cards.image {
   --cards-rule: var(--color-grey-250);
   --cards-padding: 0;
@@ -124,9 +144,10 @@
   padding: 24px 24px 0;
 }
 
+/* the source crops every tile image to a fixed 185px band (1200:621 only at 1440) */
 .cards.image .cards-card-image img {
   width: 100%;
-  aspect-ratio: 1200 / 621;
+  height: 185px;
   object-fit: cover;
 }
 
@@ -164,6 +185,17 @@
   line-height: 16px;
 }
 
+/* source latest-news tile: 16px under the date + the title's own 16px; an empty 16px text row
+   under the title; the link follows its own tile's copy (not pinned to the row bottom) */
+.cards.news .cards-card-body :is(h2, h3, h4) {
+  margin-block-start: 32px;
+}
+
+.cards.news .cards-card-body .link-cta-wrapper {
+  margin-block-start: 0;
+  padding-block-start: 32px;
+}
+
 /* logos: partner logos, 4 × 2, no rules */
 .cards.logos {
   --cards-columns: 4;
@@ -197,6 +229,8 @@
   --cards-padding: 24px;
 }
 
+/* every item keeps its rule so equal heights balance the longer column first (source: 10 + 9);
+   the clip hides the rule that lands on the table's bottom edge */
 .cards.links .cards-card-body ul {
   margin: 0;
   padding: 0;
@@ -204,6 +238,7 @@
   column-gap: 0;
   column-rule: 1px solid var(--color-grey-250);
   list-style: none;
+  clip-path: inset(0 0 1px);
 }
 
 .cards.links .cards-card-body li {
@@ -211,10 +246,6 @@
   break-inside: avoid;
   padding: 24px 16px;
   border-block-end: 1px solid var(--color-grey-250);
-}
-
-.cards.links .cards-card-body li:last-child {
-  border-block-end: 0;
 }
 
 .cards.links .cards-card-body a:any-link {

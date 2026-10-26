@@ -112,6 +112,12 @@
   color: var(--color-white);
 }
 
+/* the current section's rail item sits on the darker navy (source sidebar__element--active) */
+.header .nav-link[aria-current='page'],
+.header .nav-item.is-current > .nav-link {
+  background-color: var(--color-navy-900);
+}
+
 /* hovering the list (or an open fly-out) dims every other item */
 .header .nav-list:hover > .nav-item:not(:hover),
 .header .nav-rail.has-flyout .nav-item:not(:has(> [aria-expanded='true'])) {
@@ -266,9 +272,11 @@
   background-color: var(--color-green-700);
 }
 
+/* the source's Coveo submit glyph: 16px, solid, handle to the bottom right */
 .header .nav-search-submit .nav-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
+  mask-image: url('search-submit.svg');
 }
 
 .header .nav-tools {
@@ -340,7 +348,9 @@
   align-items: center;
   justify-content: center;
   min-height: 57px;
-  padding: 8px 48px;
+
+  /* source: 8px banner padding + 8px around each message, so a wrapped alert is 81px */
+  padding: 16px 48px;
   border-block-end: 1px solid var(--color-grey-250);
   background-color: var(--color-white);
   color: var(--color-black);
@@ -746,6 +756,11 @@
   .header .nav-link[aria-current='page'],
   .header .nav-item.is-current > .nav-link {
     color: var(--color-green-600);
+  }
+
+  .header .nav-link[aria-current='page'],
+  .header .nav-item.is-current > .nav-link {
+    background-color: transparent;
   }
 
   .header .nav-chevron {

@@ -3,6 +3,11 @@
   margin: 0;
 }
 
+/* after another block: both are 32px-padded components on the source (64px apart) */
+:where(div + .quote-wrapper) {
+  margin-block-start: calc(2 * var(--section-padding-block));
+}
+
 .quote .quote-text :is(h2, h3, p, blockquote) {
   margin: 0;
 }

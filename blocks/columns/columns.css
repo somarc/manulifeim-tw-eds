@@ -41,6 +41,11 @@
   box-shadow: var(--card-shadow);
 }
 
+/* 50/50 like the source: a 0 basis would hand the copy cell its 128px of padding on top */
+.columns.feature-card .columns-row > div {
+  flex-basis: 50%;
+}
+
 .columns.feature-card .columns-content {
   align-self: center;
   min-height: 600px;
@@ -75,10 +80,12 @@
 
 /* map (featureBanner): headline copy left, short world-map strip right, no card */
 
-/* the next block (capability cards) overlaps the strip's lower 120px, as on the source */
+/* the next block (capability cards) overlaps the strip's lower 120px, as on the source; full main
+   width like the source featureBanner (strip flush right, 64px either side of the copy) */
 .columns.map {
+  margin-inline: calc(-1 * var(--section-padding-inline));
   padding-block: 24px 90px;
-  margin-block-end: -152px;
+  margin-block-end: -120px;
 }
 
 .columns.map .columns-row {
@@ -89,7 +96,7 @@
 
 .columns.map .columns-content {
   flex: 0 1 auto;
-  padding: 48px 64px 48px 0;
+  padding: 48px var(--section-padding-inline);
 }
 
 .columns.map .columns-content :is(h2, h3) {
@@ -136,6 +143,10 @@
     gap: 0;
   }
 
+  .columns.feature-card .columns-row > div {
+    flex-basis: auto;
+  }
+
   .columns.feature-card .columns-content {
     min-height: 0;
     padding: 32px;
@@ -155,6 +166,7 @@
   }
 
   .columns.map {
+    margin-inline: 0;
     padding-block-end: 0;
     margin-block-end: 0;
   }

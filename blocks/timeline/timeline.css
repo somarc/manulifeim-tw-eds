@@ -9,6 +9,11 @@
   margin-inline: calc(-1 * var(--section-padding-inline));
 }
 
+/* the source timeline has no block padding of its own: the next band starts 32px below it */
+.timeline-wrapper:last-child .timeline {
+  margin-block-end: calc(-1 * var(--section-padding-block));
+}
+
 .timeline .timeline-track {
   display: flex;
   align-items: center;

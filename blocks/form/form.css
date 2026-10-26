@@ -1,7 +1,8 @@
 /*
- * Form (demo of the source Marketo forms): white card, 32px padding, fields with 14px labels
- * over 16px inputs (1px #DFE1DF border, 16px padding, green on hover/focus). Variant split:
- * intro copy left, form card right (private markets "Partner with us").
+ * Form (demo of the source Marketo forms): white card, 32px padding, fields with 12px labels
+ * over 16/19.2 inputs (1px #DFE1DF border, 16px padding = 53px, green on hover/focus; the
+ * select is a 58px box with a #8E90A2 border). Variant split: intro copy left, form card right
+ * with the compact 8px-padded inputs of the private markets "Partner with us" form.
  */
 .form {
   display: grid;
@@ -61,8 +62,15 @@
 
 .form .form-label p {
   margin: 0 0 8px;
-  font-size: var(--font-size-small);
-  line-height: var(--line-height-small);
+  padding-block-start: 4px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* the source Marketo asterisk: dark red, 4px before the label */
+.form .form-required {
+  margin-inline-end: 4px;
+  color: #a00e18;
 }
 
 .form .form-fields > .form-copy p {
@@ -85,7 +93,7 @@
   color: var(--text-color);
   font: inherit;
   font-size: 16px;
-  line-height: 1.75;
+  line-height: 1.2;
   transition: border-color 0.3s;
 }
 
@@ -96,11 +104,19 @@
 
 .form select.form-control {
   padding-inline-end: 48px;
+  border-color: #8e90a2;
+  line-height: 24px;
   appearance: none;
   background-image: url('../../icons/arrow-down.svg');
   background-position: right 16px center;
   background-repeat: no-repeat;
   background-size: 16px;
+}
+
+/* source message boxes: 226px (10 lines) on the contact form, 54px on the compact one */
+.form textarea.form-control {
+  height: 226px;
+  resize: vertical;
 }
 
 .form .form-field-checkbox {
@@ -124,7 +140,7 @@
   position: relative;
   flex: 0 0 auto;
   margin: 16px 8px 0 auto;
-  padding: 17px 48px;
+  padding: 10px 48px;
   background-color: var(--color-green-600);
   color: var(--color-white);
   font-weight: 700;
@@ -156,6 +172,15 @@
   font-size: 12px;
   line-height: 18px;
   opacity: 0.7;
+}
+
+/* private markets "Partner with us": the compact 37px Marketo inputs */
+.form.split :is(input:not([type='checkbox']), textarea).form-control {
+  padding: 8px;
+}
+
+.form.split textarea.form-control {
+  height: 54px;
 }
 
 @media (width <= 800px) {

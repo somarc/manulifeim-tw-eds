@@ -55,11 +55,8 @@
   border-top: 2px solid var(--color-navy-700);
 }
 
-.footer .footer-legal > p {
-  padding-block-end: 12px;
-}
-
 .footer .footer-legal > p:not(:last-of-type) {
+  padding-block-end: 12px;
   margin-block-end: 33px;
 }
 
@@ -70,8 +67,12 @@
 }
 
 .footer .footer-legal-links li {
-  padding-block: 4px 5px;
+  padding-block: 0 12px;
   font-weight: 700;
+}
+
+.footer .footer-legal-links li:last-child {
+  padding-block-end: 0;
 }
 
 /* ≤800px: logo, then the links stacked; tighter divider (source mobile footer) */

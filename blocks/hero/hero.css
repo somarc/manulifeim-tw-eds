@@ -89,11 +89,11 @@ main > .section.hero-container {
 }
 
 /*
- * overlay: the next section's first block sits 160px up over the photo (stewardship report).
+ * overlay: the next section's first block sits 128px up over the photo (stewardship report).
  * The margin also absorbs that section's top padding, so the overlap is exact at every width.
  */
 .hero.overlay {
-  --hero-overlap: 160px;
+  --hero-overlap: 128px;
 
   padding-block-end: 128px;
   margin-block-end: calc(-1 * (var(--hero-overlap) + var(--section-padding-block)));
@@ -115,6 +115,26 @@ main > .section.hero-container {
 
 .hero.page-header .hero-content h1 {
   margin: 16px 0 0;
+}
+
+/* an icon header (contact us) keeps 32px below it on the source: the next block starts 64px
+   down. Only there: other headers sit directly on the next section (no grey band). */
+main > .section:has(> .hero-wrapper > .hero.page-header:not(.dark) .hero-content :is(picture, img)):not(:has(+ .section.spacious)) {
+  padding-block-end: var(--section-padding-block);
+}
+
+/* heroHeader / dark heroHeader2 without an icon keep the icon's room above the title (64px:
+   48px icon + 16px gap; press releases, private markets). The light heroHeader2 (variant
+   `light`, or a header with a call-to-action link: case studies) starts at the top with a
+   regular-weight title. */
+.hero.page-header.light .hero-content h1,
+.hero.page-header .hero-content h1:first-child:has(~ p a) {
+  margin-block-start: 0;
+  font-weight: 400;
+}
+
+.hero.page-header:not(.light) .hero-content h1:first-child:not(:has(~ p a)) {
+  margin-block-start: 64px;
 }
 
 .hero.page-header .hero-content :is(picture, img) {

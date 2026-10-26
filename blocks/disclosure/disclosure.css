@@ -11,9 +11,10 @@
   color: var(--text-color);
 }
 
-/* after another block in the same section it sits 40px below it (collapses with the 32px gap) */
+/* after another block it sits the source component padding + 8px below it (40px at 1440,
+   32px ≤1100px; collapses with the 32px block gap) */
 :where(div + div) > .disclosure {
-  margin-block-start: 40px;
+  margin-block-start: calc(var(--section-padding-block) + 8px);
 }
 
 .disclosure .disclosure-item + .disclosure-item {

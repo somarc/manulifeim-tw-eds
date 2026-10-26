@@ -62,6 +62,20 @@ function control(type, id, formId, labelId, options, required) {
   return el;
 }
 
+/** Published view only: the leading "*" becomes the source's red asterisk (text unchanged). */
+function markRequired(labelCell) {
+  const walker = document.createTreeWalker(labelCell, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
+  while (node && !node.textContent.trim()) node = walker.nextNode();
+  const match = node?.textContent.match(/^(\s*)\*\s*/);
+  if (!match) return;
+  const star = document.createElement('span');
+  star.className = 'form-required';
+  star.textContent = '*';
+  node.textContent = node.textContent.slice(match[0].length);
+  node.before(star);
+}
+
 export default async function decorate(block) {
   instance += 1;
   const formId = `form-${instance}`;
@@ -95,6 +109,7 @@ export default async function decorate(block) {
     }
     const required = /^\s*\*|\*\s*$/.test(labelCell.textContent);
     const options = [...(optionsCell?.querySelectorAll('li') || [])].map((li) => li.textContent.trim());
+    if (required && !isAuthoring()) markRequired(labelCell);
     const el = control(type, id, formId, labelCell.id, options, required);
     row.append(el);
     if (!isAuthoring()) labelCell.addEventListener('click', () => el.focus());

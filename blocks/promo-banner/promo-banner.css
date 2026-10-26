@@ -7,6 +7,18 @@
   gap: 48px;
 }
 
+/* next to another block: both source components keep their own 32px padding (64px apart);
+   a disclosure (40px) and a timeline (no padding of its own) keep their tighter gaps */
+:where(div + .promo-banner-wrapper),
+:where(.promo-banner-wrapper + div:not(.disclosure-wrapper, .timeline-wrapper)) {
+  margin-block-start: calc(2 * var(--section-padding-block));
+}
+
+/* below a disclosure the source keeps that band's 24px tail plus both paddings (88px) */
+:where(.disclosure-wrapper + .promo-banner-wrapper) {
+  margin-block-start: calc(2 * var(--section-padding-block) + 24px);
+}
+
 .promo-banner.double {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -62,8 +74,13 @@
   line-height: var(--line-height-card-title);
 }
 
+/* copy paragraphs (body, "$22.2B in AUM" facts) are 16px apart; the link row sits 24px below */
 .promo-banner .promo-banner-content p {
-  margin: 0 0 24px;
+  margin: 0 0 16px;
+}
+
+.promo-banner .promo-banner-content p:has(+ .link-cta-wrapper) {
+  margin-block-end: 24px;
 }
 
 .promo-banner .promo-banner-content > :last-child,

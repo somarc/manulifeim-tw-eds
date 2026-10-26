@@ -84,10 +84,14 @@ def link_p(a, label=None, style=''):
 def heading_html(level, node):
     """Heading from a source title node: <i>/<em> kept as <em>, wrapper <p>s flattened."""
     node = BeautifulSoup(str(node), 'html.parser').find(True)
+    lines = [p for p in node.find_all('p') if text(p)]
     for p in node.find_all('p'):
         if not text(p):
             p.decompose()
         else:
+            # each source <p> is its own line (e.g. a <sup> kicker over the promo title)
+            if p is not lines[-1]:
+                p.insert_after(BeautifulSoup('<br>', 'html.parser'))
             p.unwrap()
     for s in node.find_all('strong'):
         s.unwrap()
@@ -413,6 +417,9 @@ def figure(node):
     out = block('columns (figure)', [row])
     cap = node.select_one('.landingImage2__content')
     if cap and text(cap):
+        # --hideCard renders the card copy as a plain caption above the image
+        if node.select_one('.landingImage2__inner--hideCard'):
+            return rich(cap, demote=False) + out
         out += rich(cap, demote=False)
     return out
 
@@ -554,9 +561,13 @@ def convert(slug):
             overlap_next = overlay
             doc.new()
         elif name == 'divider':
-            # a ruled break (source hr.divider__border, 96px above/below); needs the lead's
-            # Section Metadata style `divider` (requested) — harmless until it exists
-            doc.new(style=['divider'])
+            # a ruled break (source hr.divider__border, 96px above/below). The global
+            # `divider` style draws the rule *after* its section's content, so it goes on
+            # the section before the break; the content after the break starts a new one.
+            before = next((sec for sec in reversed(doc.sections) if sec['parts']), None)
+            if before is not None and 'divider' not in before['style']:
+                before['style'].append('divider')
+            doc.new()
         elif name == 'featureKicker__component-wrapper':
             if overlap_next == 'hero':
                 overlap_next = False
@@ -643,6 +654,14 @@ def convert(slug):
                 depth = max(len(pc) for pc in per_col)
                 pending_logos.extend(pc[r] for r in range(depth) for pc in per_col if r < len(pc))
                 continue
+            comps = [c for col in columns for c in col.find_all(True, recursive=False)]
+            if comps and all(classes(c)[:1] == ['text'] for c in comps) \
+                    and not node.find(['h1', 'h2', 'h3', 'h4', 'h5']) \
+                    and doc.cur['parts'] and doc.cur['parts'][-1].startswith('<div class="'):
+                # a fine-print-only container after a block (fixed-income "For illustrative
+                # purposes only."): its own 32px-padded component on the source (64px from the
+                # block above), so its own section
+                doc.new()
             if quarter and node.select_one('.marketoForm'):
                 # contact form: title + form in the source's centred 8-column measure
                 if doc.cur['parts']:
@@ -749,6 +768,9 @@ def tidy(document, path):
     document = re.sub(r'href="([^"]+)"', norm, document)
     document = re.sub(r'<em>(\s+)', r'\1<em>', document)
     document = re.sub(r'(\s+)</em>', r'</em>\1', document)
+    # a no-break space beside the serif <em> (source `A<em>&nbsp;global</em>&nbsp;footprint`)
+    # comes back from DA as `&nbsp; `, a visibly double gap: use a plain space there
+    document = re.sub(r'\xa0(?=<em>)|(?<=</em>)\xa0', ' ', document)
     return document
 
 

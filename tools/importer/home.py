@@ -132,7 +132,7 @@ def main():
                                sections['sustainability-cards']),
         listing_section('Latest viewpoints', viewpoints['header']['viewAll']['text'],
                         viewpoints['header']['viewAll']['href'], 'list toggle', '/viewpoints/', 3,
-                        'title-row'),
+                        'title-row, inline-controls'),
         listing_section(esc(news['heading']['text']), news['links'][0]['text'],
                         news['links'][0]['href'], 'news', '/about-us/press-releases/', 4,
                         'title-row, display'),
