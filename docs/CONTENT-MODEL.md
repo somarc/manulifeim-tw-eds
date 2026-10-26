@@ -11,11 +11,11 @@ Evidence lives outside Git at `/Users/mhess/aem/eds-labs/.captures/manulifeim-tw
 
 | Owner | Files | DA documents |
 |---|---|---|
-| lead | `styles/styles.css`, `styles/fonts.css`, `scripts/scripts.js`, `head.html`, `tools/importer/common.py`, `tools/importer/build-index.py`, `docs/CONTENT-MODEL.md`, `docs/DECISIONS.md` | `/data/content-index`, `/placeholders`, DA config sheets |
+| lead | `styles/styles.css`, `styles/fonts.css`, `scripts/scripts.js`, `head.html`, `blocks/blueprint`, `tools/importer/{common,build-index,build-library,build-placeholders,story}.py`, `tools/receipts-summary.py`, `docs/CONTENT-MODEL.md`, `docs/DECISIONS.md` | `/data/content-index`, `/placeholders`, `/library/**`, `/how-we-built-this`, DA config sheets |
 | chrome | `blocks/header`, `blocks/footer`, `scripts/disclaimer.js`, `404.html`, `tools/importer/chrome.py` | `/nav`, `/footer`, `/fragments/disclaimer` |
 | home | `blocks/carousel`, `blocks/disclosure`, `blocks/social`, `tools/importer/home.py` | `/index` |
 | landing | `blocks/hero`, `blocks/cards`, `blocks/anchor-nav`, `blocks/feature-band`, `blocks/promo-banner`, `blocks/timeline`, `blocks/image-toggle`, `blocks/quote`, `blocks/video`, `blocks/form`, `blocks/columns`, `tools/importer/landing.py` | `/capabilities/*`, `/sustainability`, `/stewardship-report`, `/about-us`, `/contact-us`, `/capabilities` |
-| discovery | `templates/article`, `blocks/article-cards`, `blocks/viewpoint-list`, `blocks/press-list`, `blocks/case-study-list`, `blocks/browse-by`, `blocks/tag-cloud`, `blocks/search`, `tools/importer/articles.py` | `/viewpoints/**`, `/about-us/press-releases/**`, `/search`, `/sustainable-investing-case-studies`, `/important-information`, `/accessibility`, `/data/authors`, `/data/case-studies` |
+| discovery | `templates/article`, `scripts/discovery.js`, `blocks/article-cards`, `blocks/viewpoint-list`, `blocks/press-list`, `blocks/case-study-list`, `blocks/browse-by`, `blocks/tag-cloud`, `blocks/search`, `tools/importer/articles.py` | `/viewpoints/**`, `/about-us/press-releases/**`, `/search`, `/sustainable-investing-case-studies`, `/important-information`, `/accessibility`, `/data/authors`, `/data/case-studies` |
 
 Need a global style, script hook or shared block change? Report it to the lead in your final message.
 
@@ -25,7 +25,8 @@ Need a global style, script hook or shared block change? Report it to the lead i
   italic ("realize the *possibilities*"). Importers keep the source's italic word as `<em>`.
 - A link alone in its paragraph: plain → circled-arrow CTA (`a.link-cta`, 14/700);
   **bold** → primary green button; _italic_ → secondary outline button.
-- Section Metadata `Style` values available globally: `intro` (centred 75% measure),
+- Section Metadata `Anchor` gives the section an id (anchor-nav targets).
+- Section Metadata `Style` values available globally: `divider` (rule ~96px below), `intro` (centred 75% measure),
   `display` (48/60 section headings), `title-row` (first heading left, the next element
   (a CTA link) right, the rest below), `narrow`, `narrow-center`, `navy`, `green`, `purple`,
   `white`, `overlap` (pull the section up 96px over the previous band), `spacious`.
@@ -59,9 +60,9 @@ Other sheets: `/data/authors` (id, name, position, company, photo, bio, link),
 
 | Block | Rows |
 |---|---|
-| `Cards (info)` | one row per tile: `[h3 title, p text, p link]` (no image cell). Optional `stat` paragraph = `<p><strong>$577B</strong> caption</p>`. Variants: `info`, `image` (row `[picture][h3, p, link]`), `news` (`[p date, h3 title, p link]`), `stats`, `logos` (`[picture link]`), `download`, `cols-2`, `cols-4` |
+| `Cards (info)` | one row per tile: `[h3 title, p text, p link]` (no image cell); stat tiles use `[h4 with <strong>figure</strong> caption]`. Variants: `info`, `image` (`[picture][h3, p, link]`), `news` (`[p date, h3 title, p link]`), `stats`, `logos` (`[picture]`), `links` (one `ul`), `cols-2`, `cols-4`; `.pdf` links get a download icon |
 | `Article Cards (list, toggle)` | config rows `[Source][/viewpoints/]`, `[Limit][3]`, optional `[Tags][…]`, `[Category][…]`, or curated rows `[<a href=/viewpoints/…>]`. Variants: `list`, `grid`, `trending`, `related`, `news`, `feature`, `toggle` |
-| `Disclosure` | `[p label][rich body]`; variant `collapsible` renders `<details>` |
+| `Disclosure` | `[p label][rich body]`; variants `collapsible` (`<details>`) and `small` (fine print; DA drops `<small>`) |
 | `Carousel (hero)` | one row per slide: `[picture][h1 or h2, p, p link]` |
 | `Hero (overlay)` | `[picture]` then `[h1, p, link]` (landing child defines variants) |
 
