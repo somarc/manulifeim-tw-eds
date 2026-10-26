@@ -53,7 +53,12 @@ Each records the evidence that forced it. Status: accepted unless noted.
 - **Trade-off:** Coveo also searched PDFs/fund data and powered "People also ask"; the EDS search
   covers migrated pages only.
 
-## ADR-006 (temporary): dev head-injection proxy until AEM Code Sync is installed
+## ADR-006 (resolved): dev head-injection proxy until AEM Code Sync is installed
+
+Status: **resolved 2026-10-26**: the owner installed AEM Code Sync (a passkey-gated GitHub App step,
+not a tool failure). `migration` synced on its next push; `main` (template commit pushed before the
+install) syncs on its next push. da-cli follow-up: somarc/da-cli#576 (make the gate explicit in
+`site create`).
 
 - **Context:** the GitHub App install is a human step; until it lands, aem.page has no code bus,
   so `aem up` proxies pages without `head.html`.

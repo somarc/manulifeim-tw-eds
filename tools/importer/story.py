@@ -27,7 +27,7 @@ TEAM = [
     ('Landing pages', 'specialist · high', 'Hero, cards, anchor nav, colour bands, promo banners, timeline, image toggle, quote, video and a demo-safe form; nine pages.'),
     ('Discovery', 'specialist · high', 'Article template, index-driven teasers, viewpoint/press/case-study listings, browse-by, tag cloud and search; articles, releases and sheets.'),
     ('Fidelity QA ×2', 'specialists · high', 'Page-by-page, four-viewport comparison against the source with fix authority over disjoint block sets.'),
-    ('Code Sync gate', 'specialist · low', 'Held the one human step (installing AEM Code Sync) so the build never waited on it.'),
+    ('Code Sync gate', 'specialist · low', 'Held the one owner-gated step, installing AEM Code Sync with the owner\'s passkey, so the build kept moving while it was pending.'),
 ]
 
 
@@ -172,6 +172,16 @@ def main():
                 'da --org somarc --repo manulifeim-tw-eds site pin-target\n'
                 'da --qmd --commit workspace init --yes\n'
                 'da workspace show --format json   # contentRoot outside the checkout'),
+            step('Install AEM Code Sync (owner action)', [
+                'Connecting the repository to the code bus is a GitHub App install that only the repository '
+                'owner can approve with a passkey. It is a deliberate human gate, not a tool failure. While it '
+                'was pending, a throwaway local proxy injected head.html so validation never stalled (ADR-006). '
+                'da-cli will name this gate explicitly at site create: somarc/da-cli#576.'],
+                '# owner: https://github.com/apps/aem-code-sync/installations/new → somarc/manulifeim-tw-eds\n'
+                'da --qmd site doctor --agent                 # code-bus styles.css: 404 until installed\n'
+                'git push origin migration                    # refs pushed after the install are synced\n'
+                'curl -sI https://migration--manulifeim-tw-eds--somarc.aem.page/scripts/aem.js   # 200',
+                'Refs pushed before the install (here: the template commit on main) appear on the code bus only after their next push.'),
             step('Media into DA, in one journaled tree', [
                 'Because Akamai blocks the ingester too, every image was fetched in the browser and uploaded '
                 'under /media; documents reference it through --rewrite-media-urls.'],
@@ -257,9 +267,9 @@ def main():
     nxt = section(
         '<h2>Honest <em>boundaries</em></h2>'
         '<ul>'
-        '<li>AEM Code Sync is a human GitHub step. Until it is installed, aem.page serves content without code '
-        'and a throwaway local proxy injected head.html for validation (ADR-006). Real Canvas edit/save round '
-        'trips are verified only after it lands.</li>'
+        '<li>AEM Code Sync is an owner-gated GitHub step. It is installed; refs pushed before the install '
+        '(main) reach the code bus on their next push, so the reviewed branch is the canonical preview until '
+        'the pull request merges. Canvas opens that code with ?ref=migration.</li>'
         f"<li>{ev['pages']} pages cover every archetype; the remaining sitemap URLs (mostly ~700 viewpoint "
         'articles, ~160 press releases and author data) reuse these templates and importers but were not bulk-imported.</li>'
         '<li>Coveo also searched PDFs and fund data; this search covers migrated pages. Marketo forms render '
