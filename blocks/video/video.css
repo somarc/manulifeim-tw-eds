@@ -1,0 +1,85 @@
+/* Video: circled-play link (+ optional poster) that opens the Brightcove player in a dialog. */
+.video {
+  position: relative;
+}
+
+.video p:has(> a[href*='players.brightcove.net']) {
+  margin: 0;
+}
+
+.video a[href*='players.brightcove.net']:any-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: inherit;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.video a[href*='players.brightcove.net']::before {
+  content: '';
+  flex: 0 0 var(--icon-link-size);
+  width: var(--icon-link-size);
+  height: var(--icon-link-size);
+  background-color: currentcolor;
+  mask: url('../../icons/play-video.svg') center / contain no-repeat;
+}
+
+.video a[href*='players.brightcove.net']:hover,
+.video a[href*='players.brightcove.net']:focus-visible {
+  text-decoration: underline;
+}
+
+.video.has-poster picture {
+  display: block;
+  margin-block-end: 16px;
+  cursor: pointer;
+}
+
+.video-dialog {
+  width: min(1100px, calc(100vw - 32px));
+  max-width: none;
+  padding: 48px 0 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.video-dialog::backdrop {
+  background: rgb(0 0 0 / 80%);
+}
+
+.video-dialog .video-frame {
+  aspect-ratio: 16 / 9;
+  background: var(--color-black);
+}
+
+.video-dialog iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-dialog .video-close {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.video-dialog .video-close::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: auto;
+  background-color: var(--color-white);
+  mask: url('../../icons/close.svg') center / contain no-repeat;
+}

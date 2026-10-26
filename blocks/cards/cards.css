@@ -1,27 +1,261 @@
-.cards > ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(257px, 1fr));
-  gap: 24px;
+/*
+ * Cards: one white container with the card shadow; tiles are split by 1px rules drawn as
+ * outset box-shadows (right + bottom) that the container clips at its outer edge, so the
+ * last row and the last column never show a rule (source infoContainer border logic).
+ * Breakpoints follow the source: 3/4 columns → 2 at ≤1100px → 1 at ≤800px.
+ */
+.cards {
+  --cards-columns: 3;
+  --cards-rule: var(--color-grey-200);
+  --cards-padding: 48px;
 }
 
-.cards > ul > li {
-  border: 1px solid #dadada;
-  background-color: var(--background-color);
+.cards.cols-2 { --cards-columns: 2; }
+.cards.cols-4 { --cards-columns: 4; }
+
+.cards > ul {
+  display: grid;
+  grid-template-columns: repeat(var(--cards-columns), minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+  color: var(--text-color);
+  list-style: none;
+}
+
+.cards .cards-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--cards-padding);
+  box-shadow: 1px 0 0 var(--cards-rule), 0 1px 0 var(--cards-rule);
 }
 
 .cards .cards-card-body {
-  margin: 16px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
 }
 
+.cards .cards-card-body :is(h2, h3, h4) {
+  margin: 0;
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 400;
+}
+
+.cards .cards-card-body h4 {
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+}
+
+.cards .cards-card-body :is(p, ul, ol) {
+  margin: 16px 0 0;
+}
+
+/* source tile lists: inside bullets, 16px indent, 8px between items */
+.cards .cards-card-body ul {
+  padding-inline-start: 16px;
+  list-style: disc inside;
+}
+
+/* the "Learn more" / "Download" link row; pinned to the tile bottom where tiles align */
+.cards .cards-card-body .link-cta-wrapper {
+  margin-block-start: 24px;
+}
+
+.cards .cards-card-body .link-cta-wrapper ~ .link-cta-wrapper {
+  margin-block-start: 8px;
+}
+
+.cards a.link-cta[href*='.pdf']::before {
+  mask-image: url('../../icons/download.svg');
+}
+
+/* stat: <p><strong>100%</strong><br>caption</p> → big bold figure over a small bold caption */
+.cards :where(.cards-card-body p:has(> strong:first-child + br)) {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.cards :where(.cards-card-body p > strong:first-child:has(+ br)) {
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+}
+
+/* optional tile illustration (info tiles with an image, e.g. sustainability themes) */
 .cards .cards-card-image {
   line-height: 0;
 }
 
-.cards > ul > li img {
+.cards:not(.image, .logos) .cards-card-image {
+  padding-block-end: 24px;
+}
+
+.cards:not(.image, .logos) .cards-card-image img {
+  width: auto;
+  max-height: 125px;
+}
+
+.cards :where(.cards-card-body li + li) {
+  margin-block-start: 8px;
+}
+
+/* stats: centred figures (private markets "100+ years / $100B+ / 285+") */
+.cards.stats .cards-card {
+  text-align: center;
+}
+
+.cards.stats .cards-card-body :is(h2, h3, h4) {
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+}
+
+/* image: sustainability tiles, 24px inset 1.93:1 image, 24/30 title, 14/21 text, #E0E0E0 rules */
+.cards.image {
+  --cards-rule: var(--color-grey-250);
+  --cards-padding: 0;
+}
+
+.cards.image .cards-card-image {
+  padding: 24px 24px 0;
+}
+
+.cards.image .cards-card-image img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1200 / 621;
   object-fit: cover;
+}
+
+.cards.image .cards-card-body {
+  padding: 24px;
+}
+
+.cards:is(.image, .news) .cards-card-body :is(h2, h3, h4) {
+  margin-block: 16px;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+}
+
+.cards.image .cards-card-body p {
+  margin: 0 0 16px;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.cards:is(.image, .news) .cards-card-body .link-cta-wrapper {
+  margin-block: auto 0;
+  padding-block-start: 16px;
+}
+
+/* news: 2-up text tiles (date, title, Read more) */
+.cards.news {
+  --cards-columns: 2;
+  --cards-padding: 24px;
+}
+
+.cards.news .cards-card-body > p:first-child,
+.cards.news .cards-card-body > .prosemirror-editor:first-child p {
+  margin: 0;
+  font-size: var(--font-size-meta);
+  line-height: 16px;
+}
+
+/* logos: partner logos, 4 × 2, no rules */
+.cards.logos {
+  --cards-columns: 4;
+  --cards-padding: 0;
+}
+
+.cards.logos > ul {
+  gap: 32px 24px;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.cards.logos .cards-card {
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.cards.logos .cards-card-image {
+  padding: 0;
+}
+
+.cards.logos .cards-card-image img {
+  width: auto;
+  max-height: 120px;
+}
+
+/* links: one cell holding the strategy list, flowing column by column (source table order) */
+.cards.links {
+  --cards-columns: 1;
+  --cards-padding: 24px;
+}
+
+.cards.links .cards-card-body ul {
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: 0;
+  column-rule: 1px solid var(--color-grey-250);
+  list-style: none;
+}
+
+.cards.links .cards-card-body li {
+  margin: 0;
+  break-inside: avoid;
+  padding: 24px 16px;
+  border-block-end: 1px solid var(--color-grey-250);
+}
+
+.cards.links .cards-card-body li:last-child {
+  border-block-end: 0;
+}
+
+.cards.links .cards-card-body a:any-link {
+  color: var(--text-color);
+}
+
+.cards.links .cards-card-body a:hover {
+  color: var(--link-color);
+}
+
+@media (width <= 1100px) {
+  .cards:not(.links, .news, .logos) {
+    --cards-columns: 2;
+  }
+
+  .cards.cols-2 {
+    --cards-padding: 32px;
+  }
+}
+
+@media (width <= 800px) {
+  .cards:not(.logos) {
+    --cards-columns: 1;
+  }
+
+  .cards.logos {
+    --cards-columns: 2;
+  }
+}
+
+@media (width <= 600px) {
+  .cards.cols-2 {
+    --cards-padding: 32px 24px;
+  }
+
+  /* the source keeps a sideways-scrolling 2-column table; one readable column instead */
+  .cards.links .cards-card-body ul {
+    columns: 1;
+  }
+
+  .cards.links .cards-card-body li {
+    padding: 16px;
+  }
 }

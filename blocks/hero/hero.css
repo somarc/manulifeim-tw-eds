@@ -1,37 +1,218 @@
-.hero-container .hero-wrapper {
-  max-width: unset;
+/*
+ * Hero: full-bleed photo with a black → transparent scrim and white copy on the left 45%
+ * (source extendedHeroBanner2--short: 600px at every desktop width). At ≤800px the photo
+ * becomes a 188px strip above the copy on white. Page-header variant = source heroHeader2.
+ */
+
+/* the hero is edge to edge: its section carries no padding (boilerplate -container hook) */
+main > .section.hero-container {
   padding: 0;
 }
 
 .hero {
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 600px;
+  background-color: var(--color-navy-900);
+  color: var(--color-white);
 }
 
-.hero h1 {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  color: var(--background-color);
+.hero > div {
+  display: contents;
 }
 
-.hero picture {
+/* media owner: every layer down to the img fills the hero (incl. Canvas editor wrappers) */
+.hero .hero-media {
   position: absolute;
   z-index: -1;
   inset: 0;
-  object-fit: cover;
-  box-sizing: border-box;
+  overflow: hidden;
+  line-height: 0;
 }
 
-.hero img {
-  object-fit: cover;
+.hero .hero-media :is(p, .prosemirror-editor, .ProseMirror, picture),
+.hero .hero-media img {
   width: 100%;
   height: 100%;
+  margin: 0;
 }
 
-@media (width >= 900px) {
-  .hero {
-    padding: 40px 32px;
+.hero .hero-media img {
+  object-fit: cover;
+  object-position: top left;
+}
+
+.hero.has-mobile-media .hero-media-mobile {
+  display: none;
+}
+
+/* readable white copy: the source's left → right black scrim over the photo */
+.hero:not(.page-header)::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(90deg, var(--color-black), transparent 80%);
+  pointer-events: none;
+}
+
+.hero .hero-content {
+  position: relative;
+  z-index: 1;
+  width: 45%;
+  max-width: 1200px;
+  padding: 48px 64px;
+}
+
+.hero .hero-content h1 {
+  margin: 0 0 16px;
+  color: inherit;
+}
+
+.hero.large .hero-content h1 {
+  font-size: var(--font-size-hero);
+  line-height: var(--line-height-hero);
+}
+
+.hero .hero-content p {
+  margin: 24px 0 0;
+}
+
+.hero .hero-content .button-wrapper {
+  margin-block-start: 24px;
+}
+
+.hero .hero-content a.link-cta:any-link {
+  color: inherit;
+}
+
+/*
+ * overlay: the next section's first block sits 160px up over the photo (stewardship report).
+ * The margin also absorbs that section's top padding, so the overlap is exact at every width.
+ */
+.hero.overlay {
+  --hero-overlap: 160px;
+
+  padding-block-end: 128px;
+  margin-block-end: calc(-1 * (var(--hero-overlap) + var(--section-padding-block)));
+}
+
+/* page header (heroHeader2): white band, 48px line icon over a 48/60 light H1 */
+.hero.page-header {
+  min-height: 250px;
+  padding: 64px;
+  border-block-end: 1px solid var(--color-grey-200);
+  background-color: var(--color-white);
+  color: var(--text-color);
+}
+
+.hero.page-header .hero-content {
+  width: 100%;
+  padding: 0;
+}
+
+.hero.page-header .hero-content h1 {
+  margin: 16px 0 0;
+}
+
+.hero.page-header .hero-content :is(picture, img) {
+  width: 48px;
+  height: 48px;
+}
+
+.hero.page-header .hero-content p {
+  max-width: 600px;
+  margin: 16px 0 0;
+}
+
+.hero.page-header .hero-content p:has(picture, img) {
+  margin: 0;
+}
+
+.hero.page-header.dark {
+  min-height: 353px;
+  border-block-end: 0;
+  background-color: var(--color-navy-900);
+  color: var(--color-white);
+}
+
+.hero.page-header .hero-media img {
+  object-position: left top;
+}
+
+@media (width >= 1100px) {
+  .hero:not(.page-header) .hero-media img {
+    object-position: top right;
+  }
+}
+
+@media (width <= 1100px) {
+  .hero .hero-content {
+    width: 75%;
+  }
+
+  .hero.overlay {
+    --hero-overlap: 152px;
+  }
+}
+
+@media (width <= 800px) {
+  .hero:not(.page-header) {
+    display: block;
+    min-height: 0;
+    background-color: var(--color-white);
+    color: var(--text-color);
+  }
+
+  .hero:not(.page-header)::before {
+    content: none;
+  }
+
+  .hero:not(.page-header) .hero-media {
+    position: static;
+    z-index: auto;
+    height: 188px;
+  }
+
+  .hero.has-mobile-media .hero-media-primary {
+    display: none;
+  }
+
+  .hero.has-mobile-media .hero-media-mobile {
+    display: block;
+  }
+
+  .hero:not(.page-header) .hero-content {
+    width: 100%;
+    padding: 24px;
+  }
+
+  .hero .hero-content p {
+    margin-block-start: 8px;
+  }
+
+  .hero .hero-content .button-wrapper {
+    margin-block-start: 16px;
+  }
+
+  .hero.overlay {
+    --hero-overlap: 144px;
+  }
+}
+
+@media (width <= 600px) {
+  .hero .hero-content h1 {
+    margin-block-end: 8px;
+  }
+
+  .hero.page-header {
+    padding: 64px 24px;
+  }
+
+  .hero.overlay {
+    margin-block-end: 0;
+    padding-block-end: 0;
   }
 }

@@ -1,0 +1,134 @@
+/*
+ * Anchor nav (source landingNav): 80px white bar, centred 16px links with 24px padding and a
+ * 3px green underline on the active link; sticks to the top with a soft shadow once scrolled.
+ * Sticky positioning needs a tall containing block, so the bar's own section is the sticky
+ * box (the block is alone in its section).
+ */
+main > .section.anchor-nav-container {
+  position: sticky;
+  z-index: 50;
+  inset-block-start: 0;
+  padding: 0;
+  border-block-end: 1px solid var(--color-grey-200);
+  background-color: var(--color-white);
+  transition: box-shadow 0.3s;
+}
+
+/* Canvas: a sticky bar would cover the fields being edited */
+html[quick-edit] main > .section.anchor-nav-container {
+  position: static;
+}
+
+main > .section.anchor-nav-container.is-stuck {
+  border-block-end-color: transparent;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 16%);
+}
+
+.anchor-nav {
+  position: relative;
+  padding-inline: 64px;
+}
+
+.anchor-nav .anchor-nav-list ul {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 -1px;
+  padding: 0;
+  list-style: none;
+}
+
+.anchor-nav .anchor-nav-list li {
+  min-width: 0;
+}
+
+/* links shrink and wrap their own text (two lines in 80px) before the bar would wrap */
+.anchor-nav .anchor-nav-list a:any-link {
+  display: flex;
+  align-items: center;
+  height: 80px;
+  padding: 0 24px;
+  border-block-end: 3px solid transparent;
+  color: var(--text-color);
+  line-height: 1.25;
+  text-decoration: none;
+  transition: color 0.4s ease-in-out, border-color 0.4s ease-in-out;
+}
+
+.anchor-nav .anchor-nav-list a:hover,
+.anchor-nav .anchor-nav-list a:focus-visible {
+  color: var(--color-green-600);
+}
+
+.anchor-nav .anchor-nav-list a.is-active {
+  border-block-end-color: var(--color-green-600);
+  color: var(--color-green-600);
+  font-weight: 700;
+}
+
+.anchor-nav .anchor-nav-toggle {
+  display: none;
+}
+
+@media (width <= 800px) {
+  .anchor-nav {
+    padding: 11px 40px;
+  }
+
+  .anchor-nav .anchor-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 58px;
+    padding: 8px 16px;
+    border: 1px solid var(--color-slate-300);
+    background-color: var(--color-white);
+    color: var(--text-color);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .anchor-nav .anchor-nav-toggle::after {
+    content: '';
+    flex: 0 0 16px;
+    height: 16px;
+    background-color: var(--color-slate-300);
+    mask: url('../../icons/arrow-down.svg') center / contain no-repeat;
+    transition: transform 0.3s;
+  }
+
+  .anchor-nav .anchor-nav-toggle[aria-expanded='true']::after {
+    transform: rotate(180deg);
+  }
+
+  /* published: the list is the dropdown; in Canvas (no toggle) it stays a visible list */
+  .anchor-nav:has(.anchor-nav-toggle) .anchor-nav-list {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    inset-inline: 40px;
+    inset-block-start: calc(100% - 11px);
+    background-color: var(--color-white);
+    box-shadow: var(--flyout-shadow);
+  }
+
+  .anchor-nav.is-open .anchor-nav-list {
+    display: block;
+  }
+
+  .anchor-nav .anchor-nav-list ul {
+    display: block;
+  }
+
+  .anchor-nav .anchor-nav-list a:any-link {
+    height: auto;
+    padding: 12px 16px;
+    border-block-end: 0;
+  }
+
+  .anchor-nav .anchor-nav-list a.is-active {
+    background-color: var(--color-green-600);
+    color: var(--color-white);
+  }
+}

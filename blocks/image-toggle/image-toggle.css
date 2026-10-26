@@ -1,0 +1,109 @@
+/*
+ * Image toggle (source imageToggle): edge to edge; left third = vertically centred stat
+ * toggles (40px icon, 16px label at 70% opacity, active bold/100%), right two thirds = the
+ * active map image, right-aligned. ≤800px: toggles stacked above the image.
+ */
+.image-toggle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  grid-template-rows: 1fr repeat(var(--image-toggle-count, 3), auto) 1fr;
+  margin-inline: calc(-1 * var(--section-padding-inline));
+  padding-block: 24px;
+}
+
+.image-toggle .image-toggle-row {
+  display: contents;
+}
+
+.image-toggle .image-toggle-tab {
+  display: flex;
+  grid-column: 1;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0;
+  padding-inline: 64px;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.image-toggle .image-toggle-tab:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-navy-900);
+  opacity: 1;
+}
+
+.image-toggle .image-toggle-row:first-child .image-toggle-tab {
+  margin-block-start: 128px;
+}
+
+.image-toggle .image-toggle-row:last-child .image-toggle-tab {
+  margin-block-end: 128px;
+}
+
+.image-toggle .image-toggle-tab.is-active {
+  font-weight: 700;
+  opacity: 1;
+}
+
+
+.image-toggle .image-toggle-tab p {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+}
+
+.image-toggle .image-toggle-tab p:has(picture, img),
+.image-toggle .image-toggle-tab picture {
+  flex: 0 0 40px;
+  line-height: 0;
+}
+
+.image-toggle .image-toggle-tab img {
+  width: 40px;
+  height: 40px;
+}
+
+.image-toggle .image-toggle-panel {
+  display: none;
+  grid-row: 1 / -1;
+  grid-column: 2;
+  place-self: center end;
+  line-height: 0;
+}
+
+.image-toggle .image-toggle-panel.is-active {
+  display: block;
+}
+
+.image-toggle .image-toggle-panel :is(p, .prosemirror-editor, .ProseMirror) {
+  margin: 0;
+}
+
+@media (width <= 800px) {
+  /* one column: every toggle first, then the active image in the last row */
+  .image-toggle {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto repeat(var(--image-toggle-count, 3), auto) auto;
+    padding-block: 16px;
+  }
+
+  .image-toggle .image-toggle-tab {
+    padding-inline: 32px;
+  }
+
+  .image-toggle .image-toggle-row:first-child .image-toggle-tab {
+    margin-block-start: 32px;
+  }
+
+  .image-toggle .image-toggle-row:last-child .image-toggle-tab {
+    margin-block-end: 32px;
+  }
+
+  .image-toggle .image-toggle-panel {
+    grid-row: -2 / -1;
+    grid-column: 1;
+    justify-self: center;
+  }
+}
