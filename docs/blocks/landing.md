@@ -46,7 +46,7 @@ Verified: with Canvas markers seeded on all nine pages, every `data-prose-index`
 
 Page header (`Hero (page-header[, dark])`): one cell `[icon picture, h1, p]`; a picture-only row
 above it becomes the dark header's background. Variants: `short` (600px), `large` (64/80 title),
-`overlay` (the next section's first block sits 160px over the photo), `page-header`, `dark`.
+`overlay` (the next section's first block sits 128px over the photo), `page-header`, `dark`.
 ≤800px: 188px photo strip above the copy on white (source behaviour).
 
 ## Cards

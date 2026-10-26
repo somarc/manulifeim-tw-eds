@@ -378,10 +378,11 @@ main > .section.title-row > .default-content-wrapper > :first-child {
 main > .section.title-row > .default-content-wrapper > :first-child + * {
   grid-column: 2;
   margin-block: 0;
+  padding-inline-end: 24px;
 }
 
 main > .section.title-row > .default-content-wrapper > :nth-child(n + 3) {
-  margin-block-start: 64px;
+  margin-block-start: calc(2 * var(--section-padding-block));
 }
 
 /* `inline-controls`: a toggling article list puts its view controls on the title line (homepage source);
@@ -453,8 +454,9 @@ main > .section.spacious {
 main > .section.divider::after {
   content: '';
   display: block;
-  margin-block: 96px 64px;
-  border-block-start: 1px solid var(--rule-color);
+  max-inline-size: 600px;
+  margin: 96px auto 32px;
+  border-block-start: 1px solid var(--color-grey-250);
 }
 
 @media (width <= 800px) {
