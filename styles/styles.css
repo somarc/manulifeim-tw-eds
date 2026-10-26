@@ -432,6 +432,14 @@ main > .section.spacious {
   padding-block: 64px;
 }
 
+/* the source's full-width rule between landing modules (~96px either side) */
+main > .section.divider::after {
+  content: '';
+  display: block;
+  margin-block: 96px 64px;
+  border-block-start: 1px solid var(--rule-color);
+}
+
 @media (width <= 800px) {
   main > .section.intro > .default-content-wrapper {
     width: 100%;

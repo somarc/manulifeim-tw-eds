@@ -38,11 +38,29 @@ def da_json(*args):
     return json.loads(out[out.find('{'):])
 
 
+# The committed Configuration Service definition (da index add default + set-property date/tags).
+# `da index show` exposes only the field list and include glob, not excludes or selectors, so the
+# full rules are mirrored here and the field list is checked against the service on every run.
+EXCLUDE = ['/drafts/**', '/fragments/**', '/**/fragments/**', '/library/**', '/data/**', '/nav', '/footer']
+SELECTORS = {
+    'title': {'selectFirst': 'meta[property="og:title"]'},
+    'description': {'selectFirst': 'meta[property="og:description"]'},
+    'image': {'selectFirst': 'meta[property="og:image"]'},
+    'date': {'selectFirst': 'meta[name="date"]'},
+    'tags': {'select': 'meta[property="article:tag"]'},
+}
+
+
 def index_definition():
     data = da_json('index', 'show')
     for idx in data.get('indices', []):
-        if idx.get('name') in (None, 'default') and idx.get('target') == '/query-index.json':
-            return idx
+        if idx.get('index', idx.get('name')) == 'default' and idx.get('target') == '/query-index.json':
+            fields = [f.strip() for f in str(idx.get('fields', '')).split(',') if f.strip()]
+            props = {f: {**SELECTORS.get(f, {'selectFirst': f'meta[name="{f}"]'}),
+                         'value': 'attribute(el, "content")'} for f in fields}
+            include = idx.get('include') or '/**'
+            return {'include': [include] if isinstance(include, str) else include,
+                    'exclude': EXCLUDE, 'properties': props}
     raise SystemExit('no default index configured (da index add default)')
 
 
