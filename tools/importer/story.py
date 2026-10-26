@@ -241,7 +241,10 @@ def main():
     workspace = section(block('feature-band green', [[
         '<h2>Experience Workspace, <em>configured</em>, not assumed</h2>'
         '<p>Authors open every page in Canvas with the site\'s real block code. The library is generated '
-        'from real migrated instances, so what an author inserts is exactly what the site renders.</p>',
+        'from real migrated instances, so what an author inserts is exactly what the site renders. '
+        'Checked in Experience Workspace itself: Layout loads the migration branch with no ?ref, the '
+        'Outline mirrors every section and block variant, Insert block lists the whole library with live '
+        'previews, and Send offers Preview only.</p>',
         '<picture><img src="/media/iinv-7270-535856-1200x628-05-sust-reporting.jpg" alt=""></picture>',
     ]]), extra={'Anchor': 'workspace'})
     workspace_tiles = section(block('cards info', [
