@@ -71,6 +71,8 @@ def site_path(href):
         if path == prefix or path.startswith(prefix + '/') or path == prefix + '.html':
             rest = path[len(prefix):]
             rest = re.sub(r'\.html$', '', rest).rstrip('/')
+            # EDS normalises repeated hyphens in delivered paths ("credit--relative" → "credit-relative")
+            rest = re.sub(r'-{2,}', '-', rest)
             if rest in ('', '/index'):
                 rest = '/'
             frag = f'#{parts.fragment}' if parts.fragment else ''
