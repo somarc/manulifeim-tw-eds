@@ -35,11 +35,12 @@ function indexCard(row, ctx) {
   const { variant, authors, text } = ctx;
   const titleTag = variant === 'feature' ? 'h2' : 'h3';
   const ids = splitList(row.authors).map(toId);
-  const showImage = !['news', 'related'].includes(variant);
+  // news tiles are text-only (source); EDS's default placeholder is not an article image
+  const showImage = variant !== 'news' && row.image && !row.image.includes('default-meta-image');
   return el(
     'div',
     { class: 'article-card' },
-    showImage && row.image
+    showImage
       ? el('div', { class: 'article-card-image' }, picture(row.image, '', variant === 'feature', variant === 'feature' ? 1200 : 750))
       : null,
     el(
