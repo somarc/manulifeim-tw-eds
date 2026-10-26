@@ -300,6 +300,7 @@ button.button {
   font-family: var(--font-sans);
   font-size: var(--font-size-body);
   line-height: 20px;
+  font-style: normal;
   font-weight: 700;
   letter-spacing: var(--letter-spacing);
   text-align: center;
