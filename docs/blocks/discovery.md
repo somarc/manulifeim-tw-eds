@@ -14,7 +14,7 @@ lines and the placeholder labels (with English fallbacks).
 | `/placeholders.json` (lead) | all | `Key, Text` — keys listed below |
 
 Any listing can be pointed at another sheet with a config row `Source Index | /path.json`
-(used only by the `/drafts/discovery/*` test copies; canonical pages use the site index).
+(a testing hook; canonical pages use the site index, `/data/content-index`).
 
 Values written into page Metadata (and so into the index): **Category** and **Tags** are the
 source's display titles (`Private Credit`, `Opportunistic credit`); filters and URLs use their
@@ -30,13 +30,20 @@ link. The template (runs before section decoration) classifies those sections, p
 metadata date above the H1, and for `Type: article` adds a generated `<aside>`: author cards
 (photo, name, position, company, Read bio), asset-manager logo card, share links (LinkedIn,
 Facebook, X, email, copy link, print/download), category and tag links into
-`/viewpoints/all?category=…|tags=…`. `Type: press` keeps the full-width press layout (32px title).
+`/viewpoints/all?category=…|tags=…`. `Type: press` keeps the full-width press layout (32px title, date band, side column as its own
+section). `Type: legal` gives the legal layout (600px column for Important information, title band
+for Accessibility). Section style `fine-print` renders the source's 13.28px small print (DA drops
+`<small>`).
 ≥1100px: content column + 416px sidebar; below: the sidebar follows the body.
 
 Canvas: no authored node is moved or rewritten; the date and aside are generated, the aside is
 `inert` in Canvas.
 
 ## Blocks
+
+Responsive notes from QA wave 2: `Viewpoint List` folds its selects behind a green **Filter**
+button below 1100px; `Press List` swaps its tabs for a labelled native `<select>` on phones;
+`Search` relies on the header search box (its own input shows only in Canvas).
 
 | Block | Table | Notes |
 |---|---|---|
@@ -72,8 +79,8 @@ Canvas: no authored node is moved or rewritten; the date and aside are generated
 ## Importer
 
 `python3 tools/importer/articles.py` writes all discovery documents and sheets into the DA
-workspace (`--only <path>` for one; `--draft-index` writes `/drafts/discovery/content-index`;
-`--draft-pages` writes `/drafts/discovery/*` listing copies wired to it). API pulls made in the
+workspace (`--only <path>` for one; the `--draft-*` options are testing hooks, and the
+`/drafts/discovery` copies were removed after the real index went live). API pulls made in the
 browser live in `.captures/manulifeim-tw/pages/data/` (`case-studies.json`,
 `viewpoints-filters.json`, `press-releases-all.json`). Paths collapse repeated hyphens (EDS
 serves `credit--relative` as `credit-relative`); SVGs over 40 KB use their svgo `-min.svg` twins
