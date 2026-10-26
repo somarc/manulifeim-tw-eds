@@ -1,6 +1,6 @@
 import { getMetadata } from '../../scripts/aem.js';
 // eslint-disable-next-line import/no-cycle
-import { fetchPlaceholders } from '../../scripts/scripts.js';
+import { fetchPlaceholders, SITE_ALERT_KEY } from '../../scripts/scripts.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 /*
@@ -11,7 +11,7 @@ import { loadFragment } from '../fragment/fragment.js';
  */
 
 const MOBILE = window.matchMedia('(width <= 800px)');
-const BANNER_KEY = 'mim-site-banner-dismissed';
+const BANNER_KEY = SITE_ALERT_KEY;
 const SECTIONS = ['brand', 'rail', 'tools', 'regions', 'alert'];
 const REGION_DIALOG_ID = 'nav-regions';
 

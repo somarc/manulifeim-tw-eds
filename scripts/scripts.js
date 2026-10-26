@@ -39,6 +39,9 @@ if (window.trustedTypes && window.trustedTypes.createPolicy) {
   });
 }
 
+/** sessionStorage key for the site alert's per-session dismissal (owned by the header block). */
+export const SITE_ALERT_KEY = 'mim-site-banner-dismissed';
+
 /** True inside DA Canvas / quick-edit: decoration must keep authored nodes editable. */
 export function isAuthoring() {
   return document.documentElement.hasAttribute('quick-edit');
@@ -182,6 +185,12 @@ async function loadTemplate(doc, main) {
  */
 async function loadEager(doc) {
   doc.documentElement.lang = 'en';
+  // the header reserves room for the site alert unless this session already dismissed it (CLS)
+  try {
+    if (sessionStorage.getItem(SITE_ALERT_KEY)) doc.documentElement.classList.add('site-alert-dismissed');
+  } catch (e) {
+    // storage unavailable: keep the reservation
+  }
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
