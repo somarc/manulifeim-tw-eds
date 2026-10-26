@@ -8,7 +8,7 @@ Writes into the DA workspace content root (never Git):
   library/templates/<t>.html    page skeletons cut from representative migrated pages
   library/templates.json        key, value
   library/icons.json            key, value, icon
-  library/config-library.json   rows for the DA site config `library` sheet
+  CAPTURES/config-library.json  rows for the DA site config `library` sheet (not uploaded)
 
 Shapes follow docs.da.live "Set up library" and da-live's library loader (blocks sheet rows
 {name, path}; extra `options` / `editor` sheets in the same JSON; `library-metadata` with a
@@ -16,13 +16,14 @@ description row). Upload + preview are separate, reviewed da-cli operations.
 """
 import copy
 import json
+import re
 import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import REPO, content_root  # noqa: E402
+from common import CAPTURES, REPO, content_root  # noqa: E402
 
 DA = 'https://content.da.live/somarc/manulifeim-tw-eds'
 CODE = 'https://main--manulifeim-tw-eds--somarc.aem.page'
@@ -71,14 +72,18 @@ def collect(root):
     found = {}
     for rel, soup in docs(root):
         for block in soup.select('main > div > div[class]'):
-            classes = block.get('class', [])
-            name = classes[0]
+            # importers wrote both `cards info` and `cards (info)`; EDS normalises both, the
+            # library uses the canonical `name variant…` form
+            tokens = re.sub(r'[(),]', ' ', ' '.join(block.get('class', []))).split()
+            name = tokens[0].lower()
             if name in SKIP_BLOCKS:
                 continue
-            key = ' '.join(sorted(classes[1:]))
+            key = ', '.join(sorted(t.lower() for t in tokens[1:]))
             variants = found.setdefault(name, {})
             if key not in variants and len(variants) < MAX_VARIANTS:
-                variants[key] = (rel, copy.copy(block))
+                instance = copy.copy(block)
+                instance['class'] = [name, *sorted(t.lower() for t in tokens[1:])]
+                variants[key] = (rel, instance)
     return found
 
 
@@ -112,7 +117,7 @@ def main():
         {'key': 'title', 'blocks': 'metadata', 'values': '', 'type': '', 'label': 'Title'},
         {'key': 'description', 'blocks': 'metadata', 'values': '', 'type': '', 'label': 'Description'},
         {'key': 'template', 'blocks': 'metadata', 'values': 'Landing= | Article=article', 'type': 'single', 'label': 'Template'},
-        {'key': 'type', 'blocks': 'metadata', 'values': 'Article=article | Press release=press-release | Page=page', 'type': 'single', 'label': 'Content type'},
+        {'key': 'type', 'blocks': 'metadata', 'values': 'Article=article | Press release=press | Page=page', 'type': 'single', 'label': 'Content type'},
         {'key': 'date', 'blocks': 'metadata', 'values': '', 'type': '', 'label': 'Date (YYYY-MM-DD)'},
         {'key': 'category', 'blocks': 'metadata', 'values': '', 'type': '', 'label': 'Category'},
         {'key': 'tags', 'blocks': 'metadata', 'values': '', 'type': '', 'label': 'Tags (comma separated)'},
@@ -141,7 +146,7 @@ def main():
                 for r in soup.select('.metadata > div') if r.select('div')}
         if templates['Article'] is None and meta.get('template') == 'article':
             templates['Article'] = rel
-        if templates['Press release'] is None and meta.get('type') == 'press-release':
+        if templates['Press release'] is None and meta.get('type') in ('press', 'press-release'):
             templates['Press release'] = rel
     template_rows = []
     for title, rel in templates.items():
@@ -154,13 +159,15 @@ def main():
     (root / 'library/templates.json').write_text(json.dumps(
         {':type': 'sheet', 'total': len(template_rows), 'offset': 0, 'limit': len(template_rows), 'data': template_rows}, indent=2) + '\n')
 
+    # No Placeholders row: /placeholders holds UI labels read by code (Key/Text), not `{{key}}`
+    # content tokens; da-live would insert tokens this site never substitutes.
     library_rows = [
         {'title': 'Blocks', 'path': f'{DA}/library/blocks.json', 'format': '', 'icon': '', 'experience': '', 'ref': ''},
         {'title': 'Templates', 'path': f'{DA}/library/templates.json', 'format': '', 'icon': '', 'experience': '', 'ref': ''},
         {'title': 'Icons', 'path': f'{DA}/library/icons.json', 'format': ':<content>:', 'icon': '', 'experience': '', 'ref': ''},
-        {'title': 'Placeholders', 'path': f'{DA}/placeholders.json', 'format': '', 'icon': '', 'experience': '', 'ref': ''},
     ]
-    (root / 'library/config-library.json').write_text(json.dumps(library_rows, indent=2) + '\n')
+    # input for `da site config set --set-sheet library=…`; kept out of the uploaded content tree
+    (CAPTURES / 'config-library.json').write_text(json.dumps(library_rows, indent=2) + '\n')
     print(f'{len(rows)} blocks, {len(options)} options, {len(icon_rows)} icons, {len(template_rows)} templates')
 
 
