@@ -1,0 +1,303 @@
+/* Viewpoint List: white title band, filter bar of native selects, 3-up cards */
+
+.viewpoint-list {
+  /* the source keeps 64px gutters down to tablet, 16px on phones */
+  --viewpoint-list-gutter: 64px;
+
+  margin-inline: calc(-1 * var(--section-padding-inline));
+  margin-block-start: calc(-1 * var(--section-padding-block));
+}
+
+.viewpoint-list > [data-config] {
+  display: none;
+}
+
+html[quick-edit] .viewpoint-list > [data-config] {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px;
+  padding: 4px var(--section-padding-inline);
+  font-size: var(--font-size-meta);
+}
+
+.viewpoint-list p {
+  margin: 0;
+}
+
+.viewpoint-list .viewpoint-list-header {
+  padding: 64px var(--viewpoint-list-gutter);
+  background-color: var(--color-white);
+}
+
+.viewpoint-list .viewpoint-list-header h1 {
+  margin: 0;
+  font-size: var(--font-size-hero);
+  line-height: var(--line-height-hero);
+  font-weight: 400;
+}
+
+.viewpoint-list .viewpoint-list-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 var(--viewpoint-list-gutter) 16px;
+  border-block-end: 1px solid var(--color-grey-250);
+  background-color: var(--color-white);
+}
+
+.viewpoint-list .viewpoint-list-selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* native selects dressed as the source's borderless filter buttons (label + chevron),
+   sized to the chosen option where field-sizing is supported */
+.viewpoint-list .viewpoint-list-select {
+  field-sizing: content;
+  max-width: 260px;
+  padding: 10px 40px 10px 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent url('../../icons/arrow-down.svg') right 16px center / 16px no-repeat;
+  color: var(--text-color);
+  font: inherit;
+  font-size: var(--font-size-small);
+  line-height: 19.6px;
+  font-weight: 700;
+  appearance: none;
+  cursor: pointer;
+}
+
+.viewpoint-list .viewpoint-list-toggle {
+  display: none;
+}
+
+.viewpoint-list .viewpoint-list-clear {
+  padding: 8px 16px;
+  border: 0;
+  background: none;
+  color: var(--color-navy-700);
+  font: inherit;
+  font-size: var(--font-size-small);
+  line-height: 19.6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.viewpoint-list .viewpoint-list-select:hover {
+  text-decoration: underline;
+}
+
+.viewpoint-list .viewpoint-list-clear:hover {
+  text-decoration: underline;
+}
+
+.viewpoint-list .viewpoint-list-clear[hidden],
+.viewpoint-list .viewpoint-list-load[hidden] {
+  display: none;
+}
+
+.viewpoint-list .viewpoint-list-results {
+  padding: 64px var(--viewpoint-list-gutter);
+}
+
+.viewpoint-list .viewpoint-list-count {
+  margin-block-end: 16px;
+  font-size: var(--font-size-meta);
+  line-height: 16px;
+}
+
+.viewpoint-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.viewpoint-list .viewpoint-list-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.viewpoint-list .viewpoint-list-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.viewpoint-list .viewpoint-list-image {
+  overflow: hidden;
+  background-color: var(--color-grey-200);
+  aspect-ratio: 390 / 179;
+}
+
+.viewpoint-list .viewpoint-list-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.viewpoint-list .viewpoint-list-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.viewpoint-list .viewpoint-list-date {
+  margin-block-end: 8px;
+  color: var(--color-navy-700);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+}
+
+.viewpoint-list .viewpoint-list-title {
+  margin: 0 0 16px;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+  font-weight: 400;
+}
+
+.viewpoint-list .viewpoint-list-title a:any-link {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.viewpoint-list .viewpoint-list-title a:hover {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.viewpoint-list .viewpoint-list-authors li {
+  display: flex;
+  gap: 8px;
+  padding-block-end: 16px;
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+}
+
+.viewpoint-list .viewpoint-list-photo {
+  flex: 0 0 40px;
+}
+
+.viewpoint-list .viewpoint-list-photo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.viewpoint-list .viewpoint-list-authors a:any-link {
+  display: block;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.viewpoint-list .viewpoint-list-authors .viewpoint-list-author {
+  font-weight: 700;
+}
+
+.viewpoint-list .viewpoint-list-authors .viewpoint-list-am {
+  font-weight: 300;
+}
+
+.viewpoint-list .viewpoint-list-authors a:hover {
+  text-decoration: underline;
+}
+
+.viewpoint-list .viewpoint-list-description {
+  margin-block: 0 16px;
+  color: var(--color-navy-700);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.viewpoint-list .viewpoint-list-more {
+  margin-block-start: auto;
+  line-height: 19.6px;
+}
+
+.viewpoint-list .viewpoint-list-more a.link-cta:any-link {
+  line-height: 19.6px;
+}
+
+.viewpoint-list .viewpoint-list-load {
+  display: flex;
+  margin: 32px auto 0;
+}
+
+@media (width <= 1100px) {
+  .viewpoint-list .viewpoint-list-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* green 180px "Filter" button; the selects open below it */
+  .viewpoint-list .viewpoint-list-toggle {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 180px;
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 0;
+    background-color: var(--color-green-600);
+    color: var(--color-white);
+    font: inherit;
+    font-size: var(--font-size-small);
+    line-height: 19.6px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .viewpoint-list .viewpoint-list-toggle::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background-color: currentcolor;
+    mask: url('../../icons/filter.svg') center / contain no-repeat;
+  }
+
+  .viewpoint-list .viewpoint-list-selects {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .viewpoint-list .viewpoint-list-toggle[aria-expanded='false'] + .viewpoint-list-selects {
+    display: none;
+  }
+}
+
+@media (width <= 800px) {
+  .viewpoint-list .viewpoint-list-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width <= 600px) {
+  .viewpoint-list {
+    --viewpoint-list-gutter: 16px;
+  }
+
+  .viewpoint-list .viewpoint-list-header {
+    padding-block: 24px;
+  }
+
+  .viewpoint-list .viewpoint-list-header h1 {
+    font-size: var(--font-size-display);
+    line-height: var(--line-height-display);
+  }
+
+  .viewpoint-list .viewpoint-list-select {
+    max-width: none;
+    flex: 1 1 100%;
+  }
+
+  .viewpoint-list .viewpoint-list-results {
+    padding-block: 24px;
+  }
+}

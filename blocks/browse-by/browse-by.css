@@ -1,0 +1,235 @@
+/* Browse By: white card, "Browse by" + tabs, a 3-column directory per tab */
+
+.browse-by {
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.browse-by .browse-by-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 27px 48px;
+  border-block-end: 1px solid var(--color-grey-250);
+}
+
+.browse-by .browse-by-title {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+  font-weight: 300;
+}
+
+.browse-by .browse-by-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.browse-by .browse-by-tab {
+  padding: 8px 16px;
+  border: 0;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  font-size: var(--font-size-small);
+  line-height: 19.6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.browse-by .browse-by-tab[aria-selected='true'] {
+  background-color: var(--color-green-600);
+  color: var(--color-white);
+}
+
+.browse-by .browse-by-tab:hover {
+  text-decoration: underline;
+}
+
+.browse-by .browse-by-panel {
+  padding: 24px 32px;
+}
+
+.browse-by .browse-by-panel[hidden] {
+  display: none;
+}
+
+/* the authored label is the tab button; the sheet link is configuration */
+.browse-by .browse-by-label,
+.browse-by [data-config] {
+  display: none;
+}
+
+html[quick-edit] .browse-by .browse-by-label,
+html[quick-edit] .browse-by [data-config] {
+  display: block;
+  font-size: var(--font-size-meta);
+  font-weight: 700;
+}
+
+.browse-by .browse-by-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 22px;
+  margin-block-end: 16px;
+  padding-inline-start: 16px;
+}
+
+.browse-by .browse-by-subtitle {
+  margin: 0;
+  color: var(--color-navy-700);
+  font-size: var(--font-size-small);
+  line-height: 17.5px;
+  font-weight: 300;
+}
+
+.browse-by .browse-by-sort-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-inline-start: 6px;
+  font-size: var(--font-size-small);
+  line-height: 19.6px;
+  font-weight: 700;
+}
+
+.browse-by .browse-by-sort {
+  padding: 1px 25px 1px 0;
+  border: 0;
+  background: transparent url('../../icons/arrow-down.svg') right center / 16px no-repeat;
+  color: var(--text-color);
+  font: inherit;
+  font-weight: 400;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* source: 3 equal flex items per row (no column gap), 6.4px between rows, 2px mask inset */
+.browse-by ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6.4px 0;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
+}
+
+.browse-by li[hidden] {
+  display: none;
+}
+
+.browse-by li a:any-link {
+  color: var(--text-color);
+}
+
+.browse-by li a:hover {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.browse-by .browse-by-author {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+}
+
+.browse-by .browse-by-photo {
+  flex: 0 0 40px;
+}
+
+.browse-by .browse-by-photo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.browse-by .browse-by-author-text {
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+}
+
+.browse-by .browse-by-author-text a:any-link {
+  color: var(--text-color);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.browse-by .browse-by-company {
+  display: block;
+  font-weight: 300;
+}
+
+.browse-by .browse-by-more {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px auto 0;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  font-size: var(--font-size-small);
+  line-height: 19.6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.browse-by .browse-by-more::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url('../../icons/arrow-down.svg') center / contain no-repeat;
+}
+
+.browse-by .browse-by-more[aria-expanded='true']::after {
+  transform: rotate(180deg);
+}
+
+.browse-by .browse-by-more[hidden] {
+  display: none;
+}
+
+@media (width <= 800px) {
+  .browse-by ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* stacked header: title over the tabs */
+  .browse-by .browse-by-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 32px;
+  }
+
+  .browse-by .browse-by-tabs {
+    padding: 2px 0 2px 2px;
+  }
+
+  .browse-by .browse-by-panel {
+    padding: 24px 16px;
+  }
+}
+
+@media (width <= 600px) {
+  .browse-by .browse-by-header {
+    padding: 24px 0 0;
+  }
+
+  .browse-by .browse-by-panel {
+    padding: 24px 0;
+  }
+
+  .browse-by ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

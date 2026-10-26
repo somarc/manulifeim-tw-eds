@@ -1,0 +1,549 @@
+/* Template: article — viewpoint articles (Type: article) and press releases (Type: press).
+ * Owns only the relationships between the page regions the template classifies:
+ * .article-header (date, H1, summary), .article-body sections, the generated
+ * .article-sidebar and .article-footer sections (related cards, tag cloud).
+ */
+
+main.article-main {
+  --article-measure: 600px;
+  --article-sidebar-width: 416px;
+
+  background-color: var(--color-white);
+}
+
+/* generated sidebar */
+.article-sidebar {
+  padding: 24px 64px;
+  border-block-start: 1px solid var(--rule-color);
+}
+
+.article-sidebar h2 {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+  font-weight: 400;
+}
+
+.article-sidebar ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-author {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.article-author + .article-author {
+  margin-block-start: 16px;
+}
+
+.article-author-photo {
+  flex: 0 0 64px;
+}
+
+.article-author-photo img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.article-author-text p {
+  margin: 0;
+  color: var(--color-navy-700);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.article-author-text .article-author-name {
+  color: var(--text-color);
+  font-weight: 700;
+}
+
+.article-author-text .article-author-company {
+  font-size: var(--font-size-meta);
+  line-height: 16px;
+}
+
+.article-author-text .link-cta-wrapper,
+.article-author-text p:last-child:has(a) {
+  margin-block-start: 8px;
+}
+
+.article-author-text a.link-cta:any-link {
+  font-size: var(--font-size-meta);
+  line-height: 18px;
+}
+
+.article-manager {
+  display: grid;
+  place-items: center;
+  min-height: 144px;
+  margin-block-start: 48px;
+  padding: 16px;
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.article-manager img {
+  max-height: 64px;
+  object-fit: contain;
+}
+
+.article-share,
+.article-links {
+  margin-block-start: 48px;
+}
+
+.article-authors + .article-share {
+  margin-block-start: 48px;
+}
+
+.article-sidebar > :first-child {
+  margin-block-start: 0;
+}
+
+.article-share .share-list {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 16px 4.5px;
+  margin: 16px -6px 0;
+}
+
+.article-share li {
+  padding: 6px;
+}
+
+.article-share .share-link {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 57px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.article-share .share-link::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  background-color: currentcolor;
+  mask: var(--share-icon) center / contain no-repeat;
+}
+
+.article-share .share-caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.share-linkedin .share-link {
+  --share-icon: url('../../icons/share-linkedin-nocolor.svg');
+
+  color: #0077b5;
+}
+
+.share-facebook .share-link {
+  --share-icon: url('../../icons/share-facebook-nocolor.svg');
+
+  color: #3b5998;
+}
+
+.share-x .share-link {
+  --share-icon: url('../../icons/share-twitter-nocolor.svg');
+
+  color: #1da1f2;
+}
+
+.share-email .share-link {
+  --share-icon: url('../../icons/share-email.svg');
+}
+
+.share-copy .share-link {
+  --share-icon: url('../../icons/share-copy.svg');
+}
+
+.share-print .share-link {
+  --share-icon: url('../../icons/download.svg');
+}
+
+.article-share .share-link:hover,
+.article-share .share-link:focus-visible {
+  background-color: var(--color-grey-150);
+}
+
+.article-share .share-status {
+  margin: 0;
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+}
+
+.article-links ul {
+  margin-block-start: 24px;
+}
+
+.article-links a:any-link {
+  color: var(--text-color);
+  line-height: var(--line-height-body);
+}
+
+/* press releases: full-width text, 32px title, no sidebar */
+main.article-type-press {
+  background-color: transparent;
+}
+
+main.article-type-press > .article-header,
+main.article-type-press > .article-body {
+  padding: 32px var(--section-padding-inline);
+}
+
+main.article-type-press > .article-header h1 {
+  margin: 0;
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 300;
+}
+
+/* the source's 8-of-12 column: two thirds of the row less one 24px gutter */
+main.article-type-press > .narrow > .default-content-wrapper {
+  max-width: calc((100% - 24px) * 2 / 3);
+  margin-inline: 0;
+}
+
+main.article-type-press > .article-body h3 {
+  margin-block-start: 0;
+}
+
+/* header: date, H1, summary */
+main.article-main > .article-body blockquote {
+  margin: 48px 0;
+  padding: 4px 20px;
+  border-inline-start: 3px solid var(--color-grey-250);
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 300;
+}
+
+main.article-main > .article-body blockquote p {
+  margin: 0;
+}
+
+main.article-type-article > .article-header {
+  padding: 64px 24px 64px 0;
+}
+
+main.article-type-article > .article-header > div {
+  max-width: var(--article-measure);
+  margin-inline: auto;
+}
+
+main.article-main .article-date {
+  margin-block-end: 16px;
+  color: var(--color-navy-700);
+  font-size: var(--font-size-meta);
+  line-height: 16px;
+}
+
+main.article-type-article > .article-header h1 {
+  margin-block-end: 16px;
+  font-weight: 400;
+}
+
+main.article-main > .article-header p:not(.article-date) {
+  margin-block-end: 0;
+  font-size: 20px;
+  line-height: 30px;
+}
+
+/* body: a 600px reading measure inside the content column; blocks may run wider */
+main.article-type-article > .article-body {
+  padding: 0 24px 0 0;
+}
+
+main.article-type-article > .article-body:not(:has(~ .article-body)) {
+  padding-block-end: 64px;
+}
+
+main.article-type-article > .article-body > .default-content-wrapper {
+  max-width: var(--article-measure);
+  margin-inline: auto;
+}
+
+main.article-type-article > .article-body > div:not(.default-content-wrapper) {
+  max-width: 680px;
+  margin-inline: auto;
+}
+
+/* in article bodies a promo banner sits 32px under the text (the wrapper's own bottom margin),
+   not the landing pages' 64px block gap */
+main.article-main > .article-body > .promo-banner-wrapper {
+  margin-block-start: 0;
+}
+
+/* collapsible disclosures run the content column (64px inset), 48px below the text,
+   109px apart and 109px above the footer rule, as the source's .disc--inset */
+main.article-type-article > .article-body > div.disclosure-wrapper {
+  max-width: none;
+  margin: 0;
+  padding-inline: 64px;
+}
+
+main.article-type-article > .article-body > .disclosure-wrapper > .disclosure {
+  margin-block: 48px 80px;
+}
+
+main.article-type-article > .article-body:not(:has(~ .article-body)) > .disclosure-wrapper:last-child > .disclosure {
+  margin-block-end: 16px;
+}
+
+main.article-main > .article-body > .default-content-wrapper picture img {
+  width: 100%;
+}
+
+main.article-main > .article-body > .default-content-wrapper p:has(> picture) {
+  margin-block-end: 32px;
+}
+
+main.article-main > .article-body > .default-content-wrapper h2 {
+  margin-block-start: 32px;
+  font-weight: 400;
+}
+
+/* `fine-print` sections: the source's <small> runs (13.28px), which DA does not keep.
+   Article fine print sets 16px lines; press fine print keeps the body's 28px lines. */
+main.article-main > .article-body.fine-print > .default-content-wrapper p {
+  font-size: 0.83em;
+  line-height: 16px;
+}
+
+main.article-type-press > .article-body.fine-print > .default-content-wrapper p {
+  line-height: var(--line-height-body);
+}
+
+main.article-type-article > .article-body.fine-print {
+  padding-block-start: 32px;
+}
+
+main.article-type-article > .article-body.fine-print > .default-content-wrapper {
+  margin-block-end: 0;
+}
+
+main.article-main > .article-body .default-content-wrapper a:any-link:not(.link-cta, .button) {
+  color: var(--text-color);
+}
+
+/* footer sections: related viewpoints, All Tags — inset 8.5% each side, as the source's
+   .viewpoints-footer__content; the tag list keeps a 32px pad there */
+main.article-main > .article-footer {
+  padding: 48px 8.5%;
+  border-block-start: 1px solid var(--rule-color);
+}
+
+main.article-main > .article-footer .tag-cloud {
+  padding: 32px;
+}
+
+main.article-main > .article-footer + .article-footer {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+/* two columns: content | sidebar */
+@media (width > 1100px) {
+  main.article-type-article {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--article-sidebar-width);
+    align-items: start;
+  }
+
+  main.article-type-article > .section {
+    grid-column: 1;
+  }
+
+  main.article-type-article > .article-footer {
+    grid-column: 1 / -1;
+  }
+
+  main.article-type-article > .article-sidebar {
+    grid-column: 2;
+    grid-row: 2 / span var(--article-body-rows, 1);
+    align-self: stretch;
+    padding: 0 64px 64px;
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--rule-color);
+  }
+
+  main.article-type-article .article-share .share-list {
+    max-width: 210px;
+  }
+}
+
+@media (width <= 1100px) {
+  main.article-type-article > .article-header,
+  main.article-type-article > .article-body {
+    padding-inline: var(--section-padding-inline);
+  }
+
+  /* one column: disclosures sit 64px in from the page edge, the footer runs full width and
+     the six share links form one row (the source's two inline lists side by side) */
+  main.article-type-article > .article-body > div.disclosure-wrapper {
+    margin-inline: calc(-1 * var(--section-padding-inline));
+  }
+
+  main.article-main > .article-footer {
+    padding-inline: 0;
+  }
+
+  .article-share .share-list {
+    grid-template-columns: repeat(6, max-content);
+  }
+}
+
+@media (width <= 800px) {
+  /* blocks run the column less 24px each side; disclosures sit 32px in */
+  main.article-type-article > .article-body > div:not(.default-content-wrapper, .disclosure-wrapper) {
+    max-width: none;
+    margin-inline: calc(24px - var(--section-padding-inline));
+  }
+
+  main.article-type-article > .article-body > div.disclosure-wrapper {
+    padding-inline: 32px;
+  }
+}
+
+@media (width <= 600px) {
+  main.article-type-article > .article-header {
+    padding-block: 16px;
+  }
+
+  main.article-type-article > .article-body > div.disclosure-wrapper {
+    padding-inline: 0;
+  }
+
+  main.article-main > .article-body blockquote {
+    font-size: var(--font-size-card-title);
+    line-height: var(--line-height-card-title);
+  }
+
+  .article-sidebar {
+    padding-inline: 16px;
+  }
+
+  .article-share .share-list {
+    grid-template-columns: repeat(3, max-content);
+  }
+
+  main.article-main > .article-footer {
+    padding-block: 32px;
+  }
+
+  main.article-main > .article-footer .tag-cloud {
+    padding: 16px;
+  }
+}
+
+@media print {
+  .article-sidebar .article-share {
+    display: none;
+  }
+}
+
+/* press: the date sits alone in a 64px band above the title, 16/16 black */
+main.article-type-press > .article-header {
+  padding-block-start: 64px;
+}
+
+main.article-type-press > .article-header .article-date {
+  margin-block-end: 32px;
+  color: var(--color-black);
+  font-size: var(--font-size-body);
+  line-height: 16px;
+}
+
+main.article-type-press > .article-body:not(:has(~ .article-body)) {
+  padding-block-end: 64px;
+}
+
+/* legal pages (Type: legal): a 64px title band, 32px body bands, plain text-colour links.
+   A title followed by the text in the same section (Important information, global legal
+   terms…) is 32/40 bold (underlined only where the source authored it: <u>); `narrow-center`
+   keeps the source's 600px measure, `narrow` its centred 8-of-12 column (913px at 1440) */
+main.article-type-legal {
+  background-color: transparent;
+}
+
+main.article-type-legal > .article-header {
+  padding-block-start: 64px;
+}
+
+main.article-type-legal > .section:last-of-type {
+  padding-block-end: 64px;
+}
+
+main.article-type-legal > .article-header:has(h1 ~ *) h1 {
+  margin: 0;
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 700;
+}
+
+main.article-type-legal > .article-header:not(:has(h1 ~ *)) h1 {
+  margin: 0;
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-display);
+  font-weight: 300;
+}
+
+main.article-type-legal > .section.narrow-center > div.default-content-wrapper {
+  max-width: 600px;
+}
+
+main.article-type-legal > .section.narrow > div.default-content-wrapper {
+  max-width: 75%;
+  margin-inline: auto;
+}
+
+@media (width <= 800px) {
+  main.article-type-legal > .section.narrow > div.default-content-wrapper {
+    max-width: none;
+  }
+}
+
+main.article-type-legal > .article-header.narrow-center p:not(.article-date) {
+  margin: 16px 0 0;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+main.article-type-legal > .section .default-content-wrapper a:any-link:not(.link-cta, .button) {
+  color: var(--text-color);
+}
+
+/* press on tablets and phones: 32px above the date, 16px under it; body text 40px in, full
+   width (after the base press rules above so it wins at equal specificity) */
+@media (width <= 800px) {
+  main.article-type-press > .article-header {
+    padding: 32px 16px 0;
+  }
+
+  main.article-type-press > .article-header .article-date {
+    margin-block-end: 16px;
+  }
+
+  main.article-type-press > .article-body {
+    padding-inline: 40px;
+  }
+
+  main.article-type-press > .narrow > .default-content-wrapper {
+    max-width: none;
+  }
+}

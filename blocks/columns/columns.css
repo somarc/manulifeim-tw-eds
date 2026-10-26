@@ -1,33 +1,195 @@
-.columns > div {
+/* Columns: equal cells side by side; stacked at ≤800px. Variants mirror source components. */
+.columns .columns-row {
   display: flex;
-  flex-direction: column;
+  gap: 32px;
 }
 
-.columns img {
+.columns .columns-row > div {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.columns .columns-content > :first-child {
+  margin-block-start: 0;
+}
+
+.columns .columns-media {
+  line-height: 0;
+}
+
+.columns .columns-media :is(p, .prosemirror-editor, .ProseMirror) {
+  margin: 0;
+}
+
+.columns .columns-media img {
   width: 100%;
 }
 
-.columns > div > div {
-  order: 1;
+.columns .has-mobile-media .columns-media-mobile {
+  display: none;
 }
 
-.columns > div > .columns-img-col {
-  order: 0;
+/* feature-card (featureKicker): white card, copy half (80px/64px, 450px measure) + square photo */
+.columns.feature-card {
+  position: relative;
+  z-index: 1;
 }
 
-.columns > div > .columns-img-col img {
-  display: block;
+.columns.feature-card .columns-row {
+  gap: 0;
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
 }
 
-@media (width >= 900px) {
-  .columns > div {
-    align-items: center;
-    flex-direction: unset;
-    gap: 24px;
+/* 50/50 like the source: a 0 basis would hand the copy cell its 128px of padding on top */
+.columns.feature-card .columns-row > div {
+  flex-basis: 50%;
+}
+
+.columns.feature-card .columns-content {
+  align-self: center;
+  min-height: 600px;
+  padding: 80px 64px;
+}
+
+.columns.feature-card .columns-content > * {
+  max-width: 450px;
+}
+
+.columns.feature-card .columns-content :is(h2, h3) {
+  margin: 0;
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-display);
+  font-weight: 300;
+}
+
+.columns.feature-card .columns-content p {
+  margin: 24px 0 0;
+}
+
+.columns.feature-card .columns-media {
+  position: relative;
+}
+
+.columns.feature-card .columns-media img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* map (featureBanner): headline copy left, short world-map strip right, no card */
+
+/* the next block (capability cards) overlaps the strip's lower 120px, as on the source; full main
+   width like the source featureBanner (strip flush right, 64px either side of the copy) */
+.columns.map {
+  margin-inline: calc(-1 * var(--section-padding-inline));
+  padding-block: 24px 90px;
+  margin-block-end: -120px;
+}
+
+.columns.map .columns-row {
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+}
+
+.columns.map .columns-content {
+  flex: 0 1 auto;
+  padding: 48px var(--section-padding-inline);
+}
+
+.columns.map .columns-content :is(h2, h3) {
+  margin: 0;
+  font-weight: 700;
+}
+
+.columns.map .columns-content p {
+  margin: 0;
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 300;
+}
+
+.columns.map .columns-media-primary {
+  flex: 0 0 auto;
+}
+
+.columns.map .columns-media-primary img {
+  width: auto;
+  height: 250px;
+}
+
+/* figure (landingImage2): one diagram, a portrait version below 800px */
+.columns.figure .columns-row {
+  gap: 0;
+}
+
+@media (width <= 800px) {
+  .columns .columns-row {
+    flex-direction: column;
+    gap: 16px;
   }
 
-  .columns > div > div {
-    flex: 1;
-    order: unset;
+  .columns .has-mobile-media .columns-media-primary {
+    display: none;
+  }
+
+  .columns .has-mobile-media .columns-media-mobile {
+    display: block;
+  }
+
+  .columns.feature-card .columns-row {
+    gap: 0;
+  }
+
+  .columns.feature-card .columns-row > div {
+    flex-basis: auto;
+  }
+
+  .columns.feature-card .columns-content {
+    min-height: 0;
+    padding: 32px;
+  }
+
+  .columns.feature-card .columns-content > * {
+    max-width: 100%;
+  }
+
+  .columns.feature-card .columns-media {
+    aspect-ratio: 1;
+  }
+
+  .columns.map .columns-row {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .columns.map {
+    margin-inline: 0;
+    padding-block-end: 0;
+    margin-block-end: 0;
+  }
+
+  .columns.map .columns-content {
+    padding: 24px 0;
+  }
+
+  .columns.map .columns-media-primary img,
+  .columns.map .columns-media-mobile img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .columns.map .has-mobile-media .columns-media-primary {
+    display: none;
+  }
+}
+
+@media (width <= 600px) {
+  .columns.feature-card .columns-content :is(h2, h3) {
+    font-size: var(--font-size-display);
+    line-height: var(--line-height-display);
   }
 }

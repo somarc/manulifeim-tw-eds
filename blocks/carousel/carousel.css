@@ -1,0 +1,268 @@
+/*
+ * Carousel (hero): the source's rotating banner. 600px slides, image cover + left→right black
+ * scrim, 45% copy column, black pill controls centred 26px above the bottom edge.
+ * Measured: home/hero.json and raw/computed-1440.json.
+ */
+
+.carousel {
+  --carousel-height: 600px;
+  --carousel-scrim: linear-gradient(90deg, var(--color-black), transparent 70%);
+  --carousel-control-bg: var(--color-black);
+  --carousel-control-hover: #333;
+  --carousel-dot: #666;
+
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  background-color: var(--color-white);
+}
+
+/* slides share one grid cell at the source's fixed 600px */
+.carousel .carousel-slide {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  grid-area: 1 / 1;
+  height: var(--carousel-height);
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* every source heading opens with a stray <br>, so the shipped layout has one empty heading
+   line above the copy. The content drops the <br>; this spacer keeps the spacing and gives
+   it up first when a long slide needs the room (source slide 3 clips its button instead). */
+.carousel .carousel-slide::before {
+  content: '';
+  flex: 0 1 var(--line-height-hero);
+  order: -1;
+}
+
+.carousel .carousel-slide.active {
+  z-index: 1;
+  visibility: visible;
+  opacity: 1;
+  animation: carousel-fade 1.5s;
+}
+
+/* readable white copy over any photograph */
+.carousel .carousel-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--carousel-scrim);
+  pointer-events: none;
+}
+
+.carousel .carousel-slide-image {
+  position: absolute;
+  inset: 0;
+}
+
+/* every layer between the cell and the image fills it (incl. Canvas editor wrappers) */
+/* stylelint-disable-next-line selector-class-pattern -- da-nx quick-edit owns .ProseMirror */
+.carousel .carousel-slide-image :is(p, picture, img, .prosemirror-editor, .ProseMirror) {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.carousel .carousel-slide-image img {
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+.carousel .carousel-slide-content {
+  position: relative;
+  z-index: 1;
+  width: 45%;
+  max-width: 1200px;
+  flex: none;
+  padding: 48px 64px 16px;
+  color: var(--color-white);
+}
+
+.carousel .carousel-slide-content :is(h1, h2, h3) {
+  margin: 0 0 16px;
+  color: inherit;
+  font-size: var(--font-size-hero);
+  line-height: var(--line-height-hero);
+  font-weight: 300;
+}
+
+.carousel .carousel-slide-content p {
+  margin-block: 24px 0;
+}
+
+.carousel .carousel-slide-content .button-wrapper {
+  margin-block: 24px 0;
+}
+
+/* stray extra cells stay out of the published layout; Canvas still shows them (.static) */
+.carousel:not(.static) .carousel-slide-extra {
+  display: none;
+}
+
+/* controls */
+.carousel .carousel-controls {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: 26px;
+  inset-inline-start: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  min-width: 248px;
+  translate: -50% 0;
+}
+
+.carousel .carousel-controls button {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.carousel .carousel-controls :is(.carousel-prev, .carousel-next) {
+  width: 34px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--carousel-control-bg);
+  background-position: center;
+  background-size: 24px;
+  background-repeat: no-repeat;
+}
+
+.carousel .carousel-prev {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M15 6l-6 6 6 6' stroke='%23fff' stroke-opacity='.4' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+.carousel .carousel-next {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M9 18l6-6-6-6' stroke='%23fff' stroke-opacity='.4' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+.carousel .carousel-controls :is(.carousel-prev, .carousel-next):hover {
+  background-color: var(--carousel-control-hover);
+}
+
+.carousel .carousel-dots {
+  display: flex;
+  height: 32px;
+  margin-inline: 16px;
+  padding-inline: 8px;
+  border-radius: 32px;
+  background-color: var(--carousel-control-bg);
+}
+
+.carousel .carousel-controls .carousel-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+.carousel .carousel-dot-bar {
+  display: block;
+  overflow: hidden;
+  width: 8px;
+  height: 8px;
+  border-radius: 10px;
+  background-color: var(--carousel-dot);
+}
+
+.carousel .carousel-dot[aria-current] .carousel-dot-bar {
+  width: 24px;
+}
+
+.carousel .carousel-dot-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-white);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* paused: the current dot becomes a play button */
+.carousel.paused .carousel-dot[aria-current] .carousel-dot-bar {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--carousel-dot) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Crect x='4' y='4' width='16' height='16' rx='8' fill-opacity='.4'/%3E%3Cpath d='M16 12l-6 3.464V8.536z'/%3E%3C/svg%3E") center / 16px no-repeat;
+}
+
+.carousel.paused .carousel-dot[aria-current] .carousel-dot-fill {
+  visibility: hidden;
+}
+
+.carousel.paused .carousel-dot[aria-current]:hover .carousel-dot-bar {
+  background-color: var(--carousel-control-hover);
+}
+
+/* Canvas (quick-edit) and single-slide carousels: slides stacked, all visible, no motion */
+.carousel.static {
+  display: block;
+}
+
+.carousel.static .carousel-slide {
+  height: auto;
+  min-height: var(--carousel-height);
+  visibility: visible;
+  opacity: 1;
+  animation: none;
+}
+
+@keyframes carousel-fade {
+  from {
+    opacity: 0.4;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (width <= 1100px) {
+  .carousel .carousel-slide-content {
+    width: 100%;
+  }
+}
+
+@media (width <= 800px) {
+  .carousel .carousel-slide-content {
+    padding: 24px;
+  }
+
+  .carousel .carousel-slide-content .button-wrapper {
+    margin-block-start: 16px;
+  }
+}
+
+@media (width <= 600px) {
+  .carousel {
+    --carousel-scrim: linear-gradient(90deg, var(--color-black), transparent);
+  }
+
+  .carousel .carousel-slide-content :is(h1, h2, h3) {
+    margin-block-end: 8px;
+  }
+
+  .carousel .carousel-slide-content p {
+    margin-block-start: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel .carousel-slide.active {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .carousel .carousel-controls button {
+    border: 1px solid ButtonText;
+  }
+}

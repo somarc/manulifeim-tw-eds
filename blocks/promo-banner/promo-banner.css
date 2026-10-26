@@ -1,0 +1,156 @@
+/*
+ * Promo banner (source simpleBanner): 300px+ coloured card with a soft shadow, copy left
+ * (32/40 light title, 24px gaps), photo right 33% (double: 2-up, 250px, photo 40%).
+ */
+.promo-banner {
+  display: grid;
+  gap: 48px;
+}
+
+/* next to another block: both source components keep their own 32px padding (64px apart);
+   a disclosure (40px) and a timeline (no padding of its own) keep their tighter gaps */
+:where(div + .promo-banner-wrapper),
+:where(.promo-banner-wrapper + div:not(.disclosure-wrapper, .timeline-wrapper)) {
+  margin-block-start: calc(2 * var(--section-padding-block));
+}
+
+/* below a disclosure the source keeps that band's 24px tail plus both paddings (88px) */
+:where(.disclosure-wrapper + .promo-banner-wrapper) {
+  margin-block-start: calc(2 * var(--section-padding-block) + 24px);
+}
+
+.promo-banner.double {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.promo-banner .promo-banner-item {
+  --promo-bg: var(--color-navy-900);
+  --promo-fg: var(--color-white);
+
+  display: flex;
+  justify-content: space-between;
+  min-height: 300px;
+  background-color: var(--promo-bg);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 16%);
+  color: var(--promo-fg);
+}
+
+.promo-banner .promo-banner-green { --promo-bg: var(--color-green-600); }
+.promo-banner .promo-banner-blue { --promo-bg: #0000c1; }
+.promo-banner .promo-banner-violet { --promo-bg: #260b42; }
+.promo-banner .promo-banner-gold { --promo-bg: #a75900; }
+
+.promo-banner .promo-banner-white {
+  --promo-bg: var(--color-white);
+  --promo-fg: var(--text-color);
+}
+
+.promo-banner.double .promo-banner-item {
+  min-height: 250px;
+}
+
+.promo-banner .promo-banner-content {
+  display: flex;
+  flex: 0 1 700px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px;
+}
+
+.promo-banner.double .promo-banner-content {
+  flex-basis: 60%;
+}
+
+.promo-banner .promo-banner-content :is(h2, h3) {
+  margin: 0 0 24px;
+  color: inherit;
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 300;
+}
+
+.promo-banner.double .promo-banner-content :is(h2, h3) {
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+}
+
+/* copy paragraphs (body, "$22.2B in AUM" facts) are 16px apart; the link row sits 24px below */
+.promo-banner .promo-banner-content p {
+  margin: 0 0 16px;
+}
+
+.promo-banner .promo-banner-content p:has(+ .link-cta-wrapper) {
+  margin-block-end: 24px;
+}
+
+.promo-banner .promo-banner-content > :last-child,
+.promo-banner .promo-banner-content > :last-child p {
+  margin-block-end: 0;
+}
+
+.promo-banner .promo-banner-content a:any-link {
+  color: inherit;
+}
+
+.promo-banner .promo-banner-image {
+  position: relative;
+  flex: 0 0 33%;
+  line-height: 0;
+}
+
+.promo-banner.double .promo-banner-image {
+  flex-basis: 40%;
+}
+
+.promo-banner .promo-banner-image :is(p, .prosemirror-editor, .ProseMirror) {
+  margin: 0;
+}
+
+/* mosaic: four pictures in a 2 × 2 grid */
+.promo-banner .promo-banner-mosaic {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.promo-banner .promo-banner-mosaic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promo-banner .promo-banner-image:not(.promo-banner-mosaic) img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+@media (width <= 1100px) {
+  .promo-banner.double {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (width <= 600px) {
+  .promo-banner .promo-banner-item {
+    flex-direction: column-reverse;
+  }
+
+  .promo-banner .promo-banner-content {
+    flex-basis: auto;
+  }
+
+  .promo-banner .promo-banner-image {
+    flex: 0 0 auto;
+    height: 400px;
+  }
+
+  .promo-banner .promo-banner-content :is(h2, h3) {
+    font-size: var(--font-size-card-title);
+    line-height: var(--line-height-card-title);
+  }
+}

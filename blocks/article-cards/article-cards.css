@@ -1,0 +1,457 @@
+/* Article Cards: list | grid | trending | related | news | feature (+ toggle, no-photos) */
+
+.article-cards {
+  --article-cards-gap: 24px;
+}
+
+/* authored config rows: hidden when published, a compact editable panel in Canvas */
+.article-cards > [data-config] {
+  display: none;
+}
+
+html[quick-edit] .article-cards > [data-config] {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px;
+  margin-block-end: 4px;
+  padding: 4px 8px;
+  border: 1px dashed var(--color-slate-300);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+}
+
+.article-cards .article-card p {
+  margin: 0;
+}
+
+html[quick-edit] .article-cards > [data-config] p {
+  margin: 0;
+}
+
+.article-cards .article-card-image picture,
+.article-cards .article-card-image img {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
+.article-cards .article-card-image img {
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: 1200 / 628;
+}
+
+.article-cards .article-card-date {
+  color: var(--color-navy-700);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+}
+
+.article-cards .article-card-body :is(h1, h2, h3, h4) {
+  margin: 8px 0 0;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+  font-weight: 300;
+}
+
+.article-cards .article-card-body :is(h1, h2, h3, h4) a:any-link {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.article-cards .article-card-body :is(h1, h2, h3, h4) a:hover,
+.article-cards .article-card-body :is(h1, h2, h3, h4) a:focus-visible {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.article-cards .article-card-description {
+  margin-block-start: 16px;
+  font-size: var(--font-size-small);
+  line-height: 19.6px;
+}
+
+.article-cards .article-card-more {
+  margin-block-start: 16px;
+}
+
+/* authors: bold name, position, company on the next line */
+.article-cards .teaser-authors {
+  display: grid;
+  gap: 16px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+}
+
+.article-cards .teaser-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.article-cards .teaser-author-photo {
+  flex: 0 0 36px;
+}
+
+.article-cards .teaser-author-photo img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.article-cards .teaser-author-company {
+  display: block;
+}
+
+/* grid (and the toggle's card mode): shadowed cards, image on top */
+.article-cards.grid .article-cards-list,
+.article-cards .article-cards-list.is-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--article-cards-gap);
+}
+
+/* the source's card mode: two 50%-minus-24px cards with a 24px right margin each */
+.article-cards .article-cards-list.is-grid {
+  grid-template-columns: repeat(2, minmax(0, calc(50% - var(--article-cards-gap))));
+}
+
+.article-cards.grid .article-card,
+.article-cards .is-grid .article-card,
+.article-cards.related .article-card,
+.article-cards.trending .article-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.article-cards.grid .article-card-body,
+.article-cards .is-grid .article-card-body,
+.article-cards.related .article-card-body,
+.article-cards.trending .article-card-body {
+  padding: 24px;
+}
+
+.article-cards .is-grid .teaser-author-photo img,
+.article-cards.grid .teaser-author-photo img {
+  width: 40px;
+  height: 40px;
+}
+
+/* toggle controls (grid / list) */
+.article-cards .article-cards-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-block-end: 24px;
+}
+
+.article-cards .article-cards-view {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background-color: var(--color-white);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.article-cards .article-cards-view::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  background-color: currentcolor;
+  mask: url('../../icons/grid-view.svg') center / contain no-repeat;
+}
+
+.article-cards .article-cards-view-list::before {
+  mask-image: url('../../icons/list-view.svg');
+}
+
+.article-cards .article-cards-view[aria-pressed='true'] {
+  background-color: var(--color-grey-200);
+}
+
+/* related: 2-up white cards, 64px author photos, green author text */
+.article-cards.related .article-cards-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--article-cards-gap);
+}
+
+.article-cards.related .article-card-date {
+  color: var(--text-color);
+}
+
+.article-cards.related .article-card-body :is(h2, h3) {
+  margin-block: 16px 0;
+  font-weight: 400;
+}
+
+.article-cards.related .teaser-author-photo,
+.article-cards.feature .teaser-author-photo {
+  flex-basis: 64px;
+}
+
+.article-cards.related .teaser-author-photo img {
+  width: 64px;
+  height: 64px;
+}
+
+.article-cards.related .teaser-author-text,
+.article-cards.feature .teaser-author-text {
+  color: var(--link-color);
+}
+
+.article-cards.related .teaser-author-name,
+.article-cards.feature .teaser-author-name {
+  font-weight: 400;
+}
+
+.article-cards.related .teaser-author-company {
+  color: var(--color-navy-700);
+}
+
+.article-cards.related .article-card-description {
+  color: var(--text-color);
+  line-height: var(--line-height-small);
+}
+
+/* news: 2x2 text cards in one shadowed container */
+.article-cards.news .article-cards-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background-color: var(--rule-color);
+  box-shadow: var(--card-shadow);
+}
+
+.article-cards.news .article-card {
+  padding: 24px;
+  background-color: var(--color-white);
+}
+
+/* source tile at 1440 (234px with a two-line title): 24 pad, 16px date line, 32px to the
+   title, 50px to "Read more" (a 28px line), 24 pad */
+.article-cards.news .article-card-date {
+  line-height: 16px;
+}
+
+.article-cards.news .article-card-body :is(h2, h3) {
+  margin-block: 32px 0;
+  font-weight: 400;
+}
+
+.article-cards.news .article-card-more {
+  margin-block-start: 50px;
+}
+
+/* feature: 50/50 card, text left, image right */
+.article-cards.feature .article-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+/* the source's text column stops 30.5px short of the padded half (450px at 1440) */
+.article-cards.feature .article-card-body {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 80px calc(64px + 30.5px) 80px 64px;
+}
+
+.article-cards.feature .article-card-image {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 320px;
+}
+
+/* the photo fills the half; every editor/picture layer between cell and img is transparent */
+.article-cards.feature .article-card-image img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.article-cards.feature .article-card-body :is(h1, h2, h3) {
+  margin: 0;
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-display);
+}
+
+
+/* authors: 40px photo, 8px gap, 12/16 text right under the title; the position follows the
+   name on its line when it fits, else wraps below it (the source's flex-wrap row) */
+.article-cards.feature .teaser-authors {
+  gap: 16px;
+  margin-block-start: 0;
+  line-height: 15.96px;
+}
+
+.article-cards.feature .teaser-author {
+  gap: 8px;
+}
+
+.article-cards.feature .teaser-author-text {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.25em;
+}
+
+.article-cards.feature .teaser-author-photo img {
+  width: 40px;
+  height: 40px;
+}
+
+.article-cards.feature .teaser-author-photo {
+  flex-basis: 40px;
+}
+
+.article-cards.feature .teaser-author-company {
+  display: none;
+}
+
+.article-cards.feature .article-card-body p:not([class]),
+.article-cards.feature .article-card-description {
+  margin-block-start: 24px;
+  color: var(--text-color);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+.article-cards.feature .article-card-more {
+  margin-block-start: 24px;
+}
+
+/* list: rows with the thumbnail on the right (20%), #EDEDED rules */
+.article-cards .is-list .article-card {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 0;
+}
+
+/* the source's author block keeps 16px below it (description hidden in list mode) */
+.article-cards :is(.is-list, .is-grid) .teaser-authors {
+  margin-block-end: 16px;
+}
+
+.article-cards .is-list .article-card + .article-card {
+  border-block-start: 1px solid var(--rule-color);
+}
+
+.article-cards .is-list .article-card-image {
+  flex: 0 0 20%;
+}
+
+.article-cards .is-list .article-card-body {
+  flex: 1 1 auto;
+}
+
+.article-cards .is-list .article-card-description {
+  display: none;
+}
+
+/* trending: one large card + two stacked */
+.article-cards.trending .article-cards-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--article-cards-gap);
+}
+
+.article-cards.trending .article-card:first-of-type {
+  grid-row: span 2;
+}
+
+@media (width <= 1100px) {
+  .article-cards.grid .article-cards-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .article-cards.feature .article-card-body {
+    padding-inline-end: 64px;
+  }
+}
+
+@media (width <= 800px) {
+  .article-cards .article-cards-controls {
+    display: none;
+  }
+
+  /* tablet list: the thumbnail moves left and the summary shows (source) */
+  .article-cards .is-list .article-card {
+    flex-direction: row;
+  }
+
+  .article-cards .is-list .article-card-description {
+    display: block;
+    margin-block-start: 0;
+  }
+
+  .article-cards.grid .article-cards-list,
+  .article-cards .article-cards-list.is-grid,
+  .article-cards.related .article-cards-list,
+  .article-cards.news .article-cards-list,
+  .article-cards.trending .article-cards-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .article-cards.feature .article-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* stacked as the source: text first, then a square photo; the title keeps display size */
+  .article-cards.feature .article-card-image {
+    grid-column: 1;
+    grid-row: 2;
+    aspect-ratio: 1;
+  }
+
+  .article-cards.feature .article-card-body {
+    grid-row: 1;
+    padding: 32px;
+  }
+
+  .article-cards.trending .article-card:first-of-type {
+    grid-row: auto;
+  }
+
+}
+
+@media (width <= 600px) {
+  .article-cards .is-list .article-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .article-cards .is-list .article-card-image {
+    flex-basis: auto;
+  }
+}
+
+/* list mode: 40px author photos 8px from the text (the source lazy-loads them; once loaded
+   they show in both modes) */
+.article-cards :is(.is-list, .is-grid) .teaser-author {
+  gap: 8px;
+}
+
+.article-cards .is-list .teaser-author-photo {
+  flex-basis: 40px;
+}
+
+.article-cards .is-list .teaser-author-photo img {
+  width: 40px;
+  height: 40px;
+}

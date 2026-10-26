@@ -1,0 +1,145 @@
+/* Tag Cloud: "All Tags" in columns; `inline` = "More insight" link bar */
+
+/* the viewpoints hub sets it flush in its section; the article footer insets it (template) */
+.tag-cloud {
+  padding: 0;
+}
+
+.tag-cloud h2 {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+  font-weight: 400;
+}
+
+/* the source keeps the native disclosure triangle in front of the inline "All Tags" title */
+.tag-cloud summary {
+  cursor: pointer;
+}
+
+.tag-cloud summary > div,
+.tag-cloud summary > div > div {
+  display: contents;
+}
+
+.tag-cloud summary h2 {
+  display: inline;
+}
+
+.tag-cloud ul {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  columns: 4;
+  column-gap: 16px;
+}
+
+.tag-cloud li {
+  padding: 8px 0;
+  break-inside: avoid;
+}
+
+.tag-cloud li a:any-link {
+  color: var(--text-color);
+  line-height: var(--line-height-body);
+}
+
+.tag-cloud li a:hover {
+  color: var(--link-color);
+}
+
+/* inline: title left, CTA links right, on a white bar with a bottom rule. Its section drops
+   its padding and the bar pulls up over the page header section's bottom padding, so it
+   touches the header band as on the source */
+main > .section:has(> .tag-cloud-wrapper > .tag-cloud.inline) {
+  padding-block: 0;
+}
+
+.tag-cloud.inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: calc(-1 * var(--section-padding-block)) calc(-1 * var(--section-padding-inline)) 0;
+  padding: 24px var(--section-padding-inline);
+  border-block-end: 1px solid var(--rule-color);
+  background-color: var(--color-white);
+}
+
+.tag-cloud.inline > div {
+  display: contents;
+}
+
+.tag-cloud.inline h2 {
+  font-weight: 300;
+}
+
+/* source: inline-block items with a 16px trailing margin (20px apart, 16px short of the edge) */
+.tag-cloud.inline ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding-inline-end: 16px;
+  columns: auto;
+}
+
+.tag-cloud.inline li {
+  padding: 0;
+}
+
+.tag-cloud.inline li a:any-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tag-cloud.inline li a:any-link::before {
+  content: '';
+  flex: 0 0 var(--icon-link-size);
+  height: var(--icon-link-size);
+  background-color: currentcolor;
+  mask: url('../../icons/arrow-right-circle.svg') center / contain no-repeat;
+}
+
+.tag-cloud.inline li a:hover {
+  text-decoration: underline;
+}
+
+@media (width <= 800px) {
+  .tag-cloud ul {
+    columns: 3;
+  }
+
+  /* inline bar stacks: title, then the links one per line */
+  .tag-cloud.inline {
+    display: block;
+    padding: 24px;
+  }
+
+  .tag-cloud.inline h2 {
+    margin-block-end: 24px;
+  }
+
+  .tag-cloud.inline ul {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 0;
+  }
+
+  .tag-cloud.inline li a:any-link {
+    padding-block: 2px;
+  }
+}
+
+@media (width <= 600px) {
+  .tag-cloud ul {
+    columns: 2;
+  }
+}

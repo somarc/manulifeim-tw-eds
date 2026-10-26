@@ -1,34 +1,63 @@
-# Your Project's Title...
-Your project's description...
+# Manulife Investment Management (Taiwan, institutional): EDS migration study
 
-## Environments
-- Preview: https://main--manulifeim-tw-eds--somarc.aem.page/
-- Live: https://main--manulifeim-tw-eds--somarc.aem.live/
+An independent, high-fidelity migration of https://www.manulifeim.com/institutional/tw/en to
+AEM Edge Delivery Services, authored in Document Authoring / Experience Workspace. It was built with
+FluffyJaws Dev Studio and da-cli, with every remote operation journaled as a QMD receipt.
+This is not the official Manulife site, and it is **preview-only**: nothing is published to aem.live.
+It is a proof of concept that lives on the `migration` branch (intentionally not merged to `main`).
 
-## Documentation
+- Preview: https://migration--manulifeim-tw-eds--somarc.aem.page/
+- How we built this: https://migration--manulifeim-tw-eds--somarc.aem.page/how-we-built-this
+- Experience Workspace (Canvas): https://da.live/canvas#/somarc/manulifeim-tw-eds/index
+- DA content: https://da.live/#/somarc/manulifeim-tw-eds
+- Content model and team contract: [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md)
+- Decisions (index without publish, EW flags, media, links, integrations): [docs/DECISIONS.md](docs/DECISIONS.md)
+- Block documentation: [docs/blocks/](docs/blocks/)
 
-Before using the aem-boilerplate, we recommend you to go through the documentation on https://www.aem.live/docs/ and more specifically:
-1. [Developer Tutorial](https://www.aem.live/developer/tutorial)
-2. [The Anatomy of a Project](https://www.aem.live/developer/anatomy-of-a-project)
-3. [Web Performance](https://www.aem.live/developer/keeping-it-100)
-4. [Markup, Sections, Blocks, and Auto Blocking](https://www.aem.live/developer/markup-sections-blocks)
+## What is migrated
 
-## Installation
+- **Shared chrome:** the 80px rail with the Capabilities fly-out, the top bar (search, region, login,
+  register), the session-dismissible alert, the footer, and the Taiwan attestation dialog
+  (accepted with a text hash, like the source).
+- **Every archetype (45 pages):** the homepage; four capability landings plus the hub;
+  sustainability, stewardship, about and contact; 20 viewpoint articles on the article template
+  (every viewpoint linked from a migrated page); the viewpoints hub and the filterable listing; four
+  press releases plus the listing; case studies; search; six legal pages.
+- **Data:** `/data/content-index` (45 rows; search and listings; see ADR-001), `/data/authors` (217),
+  `/data/case-studies` (62), and `/placeholders` (81 UI labels).
+- **Experience Workspace:** `ew.enabled`, `editor.hidePublish=/` (no Publish card),
+  `ew.canvasDefaultView=layout`, `ew.wysiwygBranch` → `migration`, plus a generated library: blocks with real variants, options
+  dropdowns, templates and icons.
+
+Quality gates (branch preview): Lighthouse mobile 100/100/100 on the homepage (LCP 1.0 s, TBT 0, CLS
+0.02); `da audit full` 0 errors; block contracts 24/24 against the code bus; lint clean.
+
+Not migrated: the remaining sitemap URLs (mostly ~680 viewpoint articles, ~155 press releases and 94
+strategy pages, which reuse these templates and importers), Coveo's PDF and fund search, live Marketo submissions, and
+login/registration. Unmigrated links land on a 404 page that names the gap and links to the original.
+
+## Development
 
 ```sh
-npm i
+npm ci && npm run lint
+da --org somarc --repo manulifeim-tw-eds --branch migration site pin-target
+da up --mode runtime --port 3000 --url https://migration--manulifeim-tw-eds--somarc.aem.page
 ```
 
-## Linting
+Importers read browser captures (Akamai blocks non-browser clients) and write only into the external
+da-cli workspace (`da workspace show`). Upload and preview are separate, reviewed operations:
 
 ```sh
-npm run lint
+python3 tools/importer/landing.py
+da --qmd content put /capabilities/fixed-income.html <file> --rewrite-media-urls          # dry-run
+da --commit --qmd content put /capabilities/fixed-income.html <file> --rewrite-media-urls
+da --commit --qmd preview page /capabilities/fixed-income --yes
+python3 tools/importer/build-index.py          # rebuild /data/content-index after metadata changes
+python3 tools/importer/build-library.py        # regenerate the Experience Workspace library
+python3 tools/receipts-summary.py              # the evidence trail
 ```
 
-## Local development
+## Rights
 
-1. Create a new repository based on the `aem-boilerplate` template
-1. Add the [AEM Code Sync GitHub App](https://github.com/apps/aem-code-sync) to the repository
-1. Install the [AEM CLI](https://github.com/adobe/helix-cli): `npm install -g @adobe/aem-cli`
-1. Start AEM Proxy: `aem up` (opens your browser at `http://localhost:3000`)
-1. Open the `manulifeim-tw-eds` directory in your favorite IDE and start coding :)
+Brand fonts, photography, logos and copy belong to Manulife and its affiliates. The Apache licence
+covers the boilerplate and implementation code only.

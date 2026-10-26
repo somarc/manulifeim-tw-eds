@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta
@@ -7,29 +7,24 @@
     content="script-src 'nonce-aem' 'strict-dynamic' 'unsafe-inline' http: https:; base-uri 'self'; object-src 'none';"
     move-to-http-header="true"
   >
-  <title>Page not found</title>
+  <title>Page not migrated | Manulife Investment Management</title>
   <script nonce="aem" type="text/javascript">
     window.isErrorPage = true;
     window.errorCode = '404';
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta property="og:title" content="Page not found">
+  <meta name="robots" content="noindex">
+  <meta property="og:title" content="Page not migrated">
+  <link rel="icon" href="/favicon.png">
+  <script nonce="aem" src="/scripts/aem.js" type="module"></script>
   <script nonce="aem" src="/scripts/scripts.js" type="module"></script>
   <script nonce="aem" type="module">
-    window.addEventListener('load', () => {
-      if (document.referrer) {
-        const { origin, pathname } = new URL(document.referrer);
-        if (origin === window.location.origin) {
-          const backBtn = document.createElement('a');
-          backBtn.classList.add('button', 'error-button-back');
-          backBtn.href = pathname;
-          backBtn.textContent = 'Go back';
-          backBtn.title = 'Go back';
-          const btnContainer = document.querySelector('.button-container');
-          btnContainer.append(backBtn);
-        }
-      }
-    });
+    // every TW/EN link is rewritten site-relative, so offer the page on the original site
+    const { pathname, search, hash } = window.location;
+    const path = pathname.replace(/\/index$/, '/').replace(/\/$/, '');
+    const original = `https://www.manulifeim.com/institutional/tw/en${path}${search}${hash}`;
+    document.querySelectorAll('[data-original]').forEach((a) => { a.href = original; });
+    document.querySelectorAll('[data-path]').forEach((code) => { code.textContent = pathname; });
   </script>
   <script nonce="aem" type="module">
     import { sampleRUM } from '/scripts/aem.js';
@@ -37,34 +32,51 @@
   </script>
   <link rel="stylesheet" href="/styles/styles.css">
   <style>
-    main.error {
-      min-height: calc(100vh - var(--nav-height));
-      display: flex;
-      align-items: center;
+    main.error > div {
+      min-height: calc(100vh - var(--header-height) - 57px);
+      padding-block: 64px;
     }
 
-    main.error .error-number {
-      width: 100%;
+    main.error .error-code {
+      margin: 0 0 8px;
+      color: var(--color-green-600);
+      font-size: var(--font-size-small);
+      line-height: var(--line-height-small);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    main.error .error-number text {
-      font-family: monospace;
+    main.error code {
+      padding: 2px 6px;
+      background: var(--color-grey-200);
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+
+    main.error a.button {
+      font-style: normal;
+    }
+
+    /* the three actions sit on one row (decorateButtons styles them) */
+    main.error :is(.button-wrapper, .link-cta-wrapper) {
+      display: inline-flex;
+      margin: 16px 24px 0 0;
+      vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="/styles/lazy-styles.css">
 </head>
 
 <body>
   <header></header>
   <main class="error">
-    <div class="section">
-      <svg viewBox="1 0 38 18" class="error-number">
-        <text x="0" y="17">404</text>
-      </svg>
-      <h2 class="error-message">Page Not Found</h2>
-      <p class="button-container">
-        <a href="/" class="button secondary error-button-home">Go home</a>
-      </p>
+    <div>
+      <p class="error-code">404 · Not migrated</p>
+      <h1>This page has not been <em>migrated</em> in this demo</h1>
+      <p>Only part of the Manulife Investment Management Taiwan institutional site was migrated to Edge Delivery Services. The page you asked for, <code data-path>/</code>, still lives on the original site.</p>
+      <p><strong><a data-original href="https://www.manulifeim.com/institutional/tw/en">Open it on manulifeim.com</a></strong></p>
+      <p><em><a href="/">Go to the homepage</a></em></p>
+      <p><a href="/how-we-built-this">How we built this</a></p>
     </div>
   </main>
   <footer></footer>

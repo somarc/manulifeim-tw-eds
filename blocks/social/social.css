@@ -1,0 +1,111 @@
+/*
+ * Social ("Stay connected"): white 72px tiles, label 12/700 left, 24px network icon right,
+ * 4 per row. Measured: home/raw/computed-1440.json (social.*).
+ */
+
+.social {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+
+  /* the source sets the tiles a full section rhythm below the display title (this margin
+     collapses with the title wrapper's 32px) and closes the band with 88/56/56px of space */
+  margin-block: calc(2 * var(--section-padding-block)) 56px;
+}
+
+.social .social-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+  padding: 24px 32px;
+  border-radius: 0 0 3px 3px;
+  background-color: var(--color-white);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 16%);
+  transition: background-color 0.3s;
+}
+
+.social .social-item:hover,
+.social .social-item:focus-within {
+  background-color: var(--color-grey-150);
+}
+
+.social .social-link {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.social .social-icon {
+  flex: 0 0 auto;
+  order: 1;
+}
+
+.social .social-item p {
+  margin: 0;
+  font-size: var(--font-size-meta);
+  line-height: 16px;
+  letter-spacing: var(--letter-spacing);
+}
+
+/* the tile is the affordance: no circled-arrow CTA treatment from decorateButtons */
+.social .social-link a:any-link {
+  display: inline;
+  color: var(--text-color);
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.social .social-link a::before {
+  content: none;
+}
+
+.social .social-icon .icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.social .social-icon :is(img, svg) {
+  width: 24px;
+  height: 24px;
+}
+
+/* published: the whole tile is the link */
+.social.stretch .social-link a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.social.stretch .social-item:has(a:focus-visible) {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-navy-900);
+}
+
+.social.stretch .social-link a:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+
+@media (width <= 1100px) {
+  .social {
+    margin-block-end: 32px;
+  }
+}
+
+@media (width <= 800px) {
+  .social {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-block-end: 40px;
+  }
+}
+
+@media (width <= 600px) {
+  .social {
+    grid-template-columns: minmax(0, 1fr);
+    margin-block-end: 16px;
+  }
+}

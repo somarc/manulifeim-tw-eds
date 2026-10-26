@@ -1,0 +1,61 @@
+/* Quote: centred 75% measure with a small icon above (default) or a left-ruled light quote. */
+.quote {
+  margin: 0;
+}
+
+/* after another block: both are 32px-padded components on the source (64px apart) */
+:where(div + .quote-wrapper) {
+  margin-block-start: calc(2 * var(--section-padding-block));
+}
+
+.quote .quote-text :is(h2, h3, p, blockquote) {
+  margin: 0;
+}
+
+.quote .quote-text :is(h2, h3, blockquote) {
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: 400;
+}
+
+.quote .quote-text blockquote {
+  padding: 0;
+  border: 0;
+}
+
+.quote .quote-attribution p {
+  margin: 16px 0 0;
+}
+
+.quote.centered {
+  width: min(75%, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.quote.centered .quote-text picture,
+.quote.centered .quote-text img {
+  display: inline-block;
+  width: auto;
+  max-height: 64px;
+}
+
+.quote.centered .quote-text p:has(picture, img) {
+  margin-block-end: 16px;
+  line-height: 0;
+}
+
+.quote.rule {
+  padding-inline-start: 24px;
+  border-inline-start: 4px solid var(--color-green-600);
+}
+
+.quote.rule .quote-text :is(h2, h3, p, blockquote) {
+  font-weight: 300;
+}
+
+@media (width <= 800px) {
+  .quote.centered {
+    width: 100%;
+  }
+}

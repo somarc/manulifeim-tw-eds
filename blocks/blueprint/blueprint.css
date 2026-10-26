@@ -1,0 +1,103 @@
+.blueprint {
+  counter-reset: blueprint;
+  background: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.blueprint .blueprint-step {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 48px;
+  padding: 48px;
+  border-block-start: 1px solid var(--rule-color);
+  counter-increment: blueprint;
+}
+
+.blueprint .blueprint-step:first-child {
+  border-block-start: 0;
+}
+
+.blueprint .blueprint-context,
+.blueprint .blueprint-commands {
+  min-inline-size: 0;
+}
+
+.blueprint .blueprint-context::before {
+  content: counter(blueprint, decimal-leading-zero);
+  display: block;
+  margin-block-end: 16px;
+  color: var(--color-green-600);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.blueprint .blueprint-context h3 {
+  margin-block-end: 16px;
+}
+
+.blueprint .blueprint-commands {
+  position: relative;
+  align-self: start;
+  padding: 56px 24px 24px;
+  background: var(--color-navy-900);
+  color: var(--color-white);
+}
+
+.blueprint pre {
+  margin: 0;
+  font: 13px / 1.65 ui-monospace, sfmono-regular, menlo, consolas, monospace;
+  letter-spacing: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.blueprint pre code {
+  font: inherit;
+}
+
+.blueprint .blueprint-commands p {
+  margin: 16px 0 0;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--color-navy-700);
+  color: var(--color-rail-label);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.blueprint .blueprint-commands a:any-link {
+  color: var(--color-green-light);
+}
+
+.blueprint .blueprint-copy {
+  position: absolute;
+  inset: 12px 12px auto auto;
+  min-block-size: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--color-slate-300);
+  background: transparent;
+  color: var(--color-white);
+  font: 700 var(--font-size-meta) / 1 var(--font-sans);
+  cursor: pointer;
+}
+
+.blueprint .blueprint-copy:hover,
+.blueprint .blueprint-copy:focus-visible {
+  border-color: var(--color-green-light);
+}
+
+@media (width <= 1100px) {
+  .blueprint .blueprint-step {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px;
+  }
+}
+
+@media (width <= 600px) {
+  .blueprint .blueprint-step {
+    padding: 24px 16px;
+  }
+}

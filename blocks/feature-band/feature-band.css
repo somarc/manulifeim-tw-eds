@@ -1,0 +1,160 @@
+/*
+ * Feature band (source marketingSection): 600px+ colour band, copy 2/3 with 128px/64px
+ * margins, photo in the right 1/3 (cover). ≤1100px: photo becomes a 256px strip above the
+ * copy. The band bleeds over the section's inline padding and its bottom padding; the top
+ * padding stays, like the source marketingSection's own 32px top padding (64px from the
+ * component above).
+ */
+.feature-band {
+  --band-bg: var(--color-navy-900);
+  --band-fg: var(--color-white);
+
+  margin-inline: calc(-1 * var(--section-padding-inline));
+  background-color: var(--band-bg);
+  color: var(--band-fg);
+}
+
+.feature-band-wrapper:last-child .feature-band {
+  margin-block-end: calc(-1 * var(--section-padding-block));
+}
+
+/* a plain band is followed by 48px (the source's next component sits 16px below it) */
+.feature-band-wrapper:last-child .feature-band:not(.overlay) {
+  margin-block-end: calc(16px - var(--section-padding-block));
+}
+
+/* an overlay band that nothing overlaps (sustainability: the source's empty overlapping
+   spacer absorbs it) is followed by 64px */
+main > .section:has(.feature-band-wrapper:last-child .feature-band.overlay) + .section:not(.overlap) {
+  padding-block-start: calc(2 * var(--section-padding-block));
+}
+
+/* the source's overlapping component keeps its 32px top padding: it covers 64px of the band
+   (a disclosure brings its own 8px instead) */
+main > .section:has(.feature-band.overlay) + .section.overlap:not(:has(> .disclosure-wrapper:first-child)) {
+  padding-block-start: var(--section-padding-block);
+}
+
+.feature-band.green { --band-bg: var(--color-green-700); }
+.feature-band.purple { --band-bg: var(--color-purple-700); }
+.feature-band.blue { --band-bg: #0000c1; }
+
+.feature-band.white {
+  --band-bg: var(--color-white);
+  --band-fg: var(--text-color);
+}
+
+.feature-band .feature-band-row {
+  display: flex;
+  justify-content: space-between;
+  min-height: 600px;
+}
+
+.feature-band.short .feature-band-row {
+  min-height: 460px;
+}
+
+.feature-band .feature-band-content {
+  flex: 0 1 66.666%;
+  align-self: center;
+  max-width: 1200px;
+  margin: 128px 64px;
+}
+
+.feature-band.overlay .feature-band-content {
+  margin-block-end: 192px;
+}
+
+.feature-band .feature-band-content :is(h2, h3) {
+  margin: 0 0 8px;
+  color: inherit;
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-display);
+  font-weight: 300;
+}
+
+.feature-band .feature-band-content p {
+  margin: 0;
+}
+
+.feature-band .feature-band-content.has-icon > :first-child,
+.feature-band .feature-band-content.has-icon > .prosemirror-editor:first-child p {
+  margin-block-end: 8px;
+  line-height: 0;
+}
+
+
+.feature-band .feature-band-content .link-cta-wrapper {
+  margin-block-start: 24px;
+}
+
+.feature-band a.link-cta:any-link {
+  color: inherit;
+}
+
+/* both columns shrink from 2/3 + 1/3 like the source (copy 807px, photo 410px at 1440) */
+.feature-band .feature-band-image {
+  position: relative;
+  flex: 0 1 33.333%;
+  padding: 0 64px 64px 0;
+  line-height: 0;
+}
+
+.feature-band .feature-band-image :is(p, .prosemirror-editor, .ProseMirror, picture) {
+  margin: 0;
+}
+
+.feature-band .feature-band-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.feature-band .feature-band-content.has-icon > :first-child img {
+  width: 48px;
+  height: 48px;
+}
+
+@media (width <= 1100px) {
+  .feature-band .feature-band-row {
+    flex-direction: column-reverse;
+    min-height: 0;
+  }
+
+  .feature-band.short .feature-band-row {
+    min-height: 0;
+  }
+
+  .feature-band .feature-band-content {
+    flex-basis: auto;
+    align-self: flex-start;
+    max-width: 100%;
+    margin: 0;
+    padding: 24px 32px 32px;
+  }
+
+  .feature-band.overlay .feature-band-content {
+    margin-block-end: 192px;
+  }
+
+  .feature-band .feature-band-image {
+    flex-basis: auto;
+    height: 256px;
+    padding: 0;
+  }
+}
+
+@media (width <= 800px) {
+  .feature-band.overlay .feature-band-content {
+    margin-block-end: 64px;
+  }
+}
+
+@media (width <= 600px) {
+  .feature-band.overlay .feature-band-content {
+    margin-block-end: 48px;
+  }
+}

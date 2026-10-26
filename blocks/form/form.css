@@ -1,0 +1,205 @@
+/*
+ * Form (demo of the source Marketo forms): white card, 32px padding, fields with 12px labels
+ * over 16/19.2 inputs (1px #DFE1DF border, 16px padding = 53px, green on hover/focus; the
+ * select is a 58px box with a #8E90A2 border). Variant split: intro copy left, form card right
+ * with the compact 8px-padded inputs of the private markets "Partner with us" form.
+ */
+.form {
+  display: grid;
+  gap: 32px;
+}
+
+.form.split {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.form .form-intro > .form-copy > div > :first-child {
+  margin-block-start: 0;
+}
+
+.form .form-fields {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 850px;
+  margin-inline: auto;
+  padding: 32px;
+  background-color: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.form .form-fields > * {
+  flex: 1 1 100%;
+}
+
+.form .form-notice {
+  margin: 0 8px 16px;
+  padding: 12px 16px;
+  border-inline-start: 4px solid var(--color-green-600);
+  background-color: var(--color-grey-150);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.form .form-notice.is-emphasised {
+  outline: 2px solid var(--color-green-600);
+}
+
+.form .form-notice a:any-link {
+  font-weight: 700;
+}
+
+.form .form-field,
+.form .form-fields > .form-copy {
+  padding: 8px;
+}
+
+.form .form-fields > .form-copy {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.form .form-label p {
+  margin: 0 0 8px;
+  padding-block-start: 4px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* the source Marketo asterisk: dark red, 4px before the label */
+.form .form-required {
+  margin-inline-end: 4px;
+  color: #a00e18;
+}
+
+.form .form-fields > .form-copy p {
+  margin: 0 0 8px;
+}
+
+
+.form .form-type,
+.form .form-options {
+  display: none;
+}
+
+.form .form-control {
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #dfe1df;
+  border-radius: 0;
+  background-color: var(--color-white);
+  color: var(--text-color);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.2;
+  transition: border-color 0.3s;
+}
+
+.form .form-control:hover,
+.form .form-control:focus {
+  border-color: var(--color-green-600);
+}
+
+.form select.form-control {
+  padding-inline-end: 48px;
+  border-color: #8e90a2;
+  line-height: 24px;
+  appearance: none;
+  background-image: url('../../icons/arrow-down.svg');
+  background-position: right 16px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+/* source message boxes: 226px (10 lines) on the contact form, 54px on the compact one */
+.form textarea.form-control {
+  height: 226px;
+  resize: vertical;
+}
+
+.form .form-field-checkbox {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.form .form-field-checkbox .form-control {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  accent-color: var(--color-green-600);
+}
+
+/* submit: the authored label is the button face; the generated button carries semantics */
+.form .form-field-submit {
+  position: relative;
+  flex: 0 0 auto;
+  margin: 16px 8px 0 auto;
+  padding: 10px 48px;
+  background-color: var(--color-green-600);
+  color: var(--color-white);
+  font-weight: 700;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.form .form-field-submit .form-label p {
+  margin: 0;
+  font-size: var(--font-size-small);
+  line-height: 20px;
+  font-weight: 700;
+}
+
+.form .form-field-submit .form-submit {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* Canvas: show the field type and option cells so authors can edit them */
+.form.is-authoring .form-type,
+.form.is-authoring .form-options {
+  display: block;
+  font-size: 12px;
+  line-height: 18px;
+  opacity: 0.7;
+}
+
+/* private markets "Partner with us": the compact 37px Marketo inputs */
+.form.split :is(input:not([type='checkbox']), textarea).form-control {
+  padding: 8px;
+}
+
+.form.split textarea.form-control {
+  height: 54px;
+}
+
+@media (width <= 800px) {
+  .form.split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 600px) {
+  .form .form-fields {
+    padding: 16px;
+  }
+
+  .form .form-field,
+  .form .form-fields > .form-copy {
+    padding: 8px 0;
+  }
+
+  .form .form-field-submit {
+    margin-inline: 0;
+  }
+}
