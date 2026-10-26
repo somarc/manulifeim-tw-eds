@@ -1,6 +1,9 @@
 /* Viewpoint List: white title band, filter bar of native selects, 3-up cards */
 
 .viewpoint-list {
+  /* the source keeps 64px gutters down to tablet, 16px on phones */
+  --viewpoint-list-gutter: 64px;
+
   margin-inline: calc(-1 * var(--section-padding-inline));
   margin-block-start: calc(-1 * var(--section-padding-block));
 }
@@ -22,7 +25,7 @@ html[quick-edit] .viewpoint-list > [data-config] {
 }
 
 .viewpoint-list .viewpoint-list-header {
-  padding: 64px var(--section-padding-inline);
+  padding: 64px var(--viewpoint-list-gutter);
   background-color: var(--color-white);
 }
 
@@ -39,7 +42,7 @@ html[quick-edit] .viewpoint-list > [data-config] {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 var(--section-padding-inline) 16px;
+  padding: 0 var(--viewpoint-list-gutter) 16px;
   border-block-end: 1px solid var(--color-grey-250);
   background-color: var(--color-white);
 }
@@ -50,12 +53,15 @@ html[quick-edit] .viewpoint-list > [data-config] {
   gap: 16px;
 }
 
+/* native selects dressed as the source's borderless filter buttons (label + chevron),
+   sized to the chosen option where field-sizing is supported */
 .viewpoint-list .viewpoint-list-select {
+  field-sizing: content;
   max-width: 260px;
   padding: 10px 40px 10px 16px;
-  border: 1px solid var(--color-grey-250);
+  border: 0;
   border-radius: 0;
-  background: var(--color-white) url('../../icons/arrow-down.svg') right 12px center / 16px no-repeat;
+  background: transparent url('../../icons/arrow-down.svg') right 16px center / 16px no-repeat;
   color: var(--text-color);
   font: inherit;
   font-size: var(--font-size-small);
@@ -65,6 +71,10 @@ html[quick-edit] .viewpoint-list > [data-config] {
   cursor: pointer;
 }
 
+.viewpoint-list .viewpoint-list-toggle {
+  display: none;
+}
+
 .viewpoint-list .viewpoint-list-clear {
   padding: 8px 16px;
   border: 0;
@@ -72,8 +82,13 @@ html[quick-edit] .viewpoint-list > [data-config] {
   color: var(--color-navy-700);
   font: inherit;
   font-size: var(--font-size-small);
+  line-height: 19.6px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.viewpoint-list .viewpoint-list-select:hover {
+  text-decoration: underline;
 }
 
 .viewpoint-list .viewpoint-list-clear:hover {
@@ -86,7 +101,7 @@ html[quick-edit] .viewpoint-list > [data-config] {
 }
 
 .viewpoint-list .viewpoint-list-results {
-  padding: 64px var(--section-padding-inline);
+  padding: 64px var(--viewpoint-list-gutter);
 }
 
 .viewpoint-list .viewpoint-list-count {
@@ -195,7 +210,7 @@ html[quick-edit] .viewpoint-list > [data-config] {
 }
 
 .viewpoint-list .viewpoint-list-description {
-  margin-block: 16px;
+  margin-block: 0 16px;
   color: var(--color-navy-700);
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
@@ -203,6 +218,11 @@ html[quick-edit] .viewpoint-list > [data-config] {
 
 .viewpoint-list .viewpoint-list-more {
   margin-block-start: auto;
+  line-height: 19.6px;
+}
+
+.viewpoint-list .viewpoint-list-more a.link-cta:any-link {
+  line-height: 19.6px;
 }
 
 .viewpoint-list .viewpoint-list-load {
@@ -214,11 +234,57 @@ html[quick-edit] .viewpoint-list > [data-config] {
   .viewpoint-list .viewpoint-list-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  /* green 180px "Filter" button; the selects open below it */
+  .viewpoint-list .viewpoint-list-toggle {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 180px;
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 0;
+    background-color: var(--color-green-600);
+    color: var(--color-white);
+    font: inherit;
+    font-size: var(--font-size-small);
+    line-height: 19.6px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .viewpoint-list .viewpoint-list-toggle::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background-color: currentcolor;
+    mask: url('../../icons/filter.svg') center / contain no-repeat;
+  }
+
+  .viewpoint-list .viewpoint-list-selects {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .viewpoint-list .viewpoint-list-toggle[aria-expanded='false'] + .viewpoint-list-selects {
+    display: none;
+  }
+}
+
+@media (width <= 800px) {
+  .viewpoint-list .viewpoint-list-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (width <= 600px) {
+  .viewpoint-list {
+    --viewpoint-list-gutter: 16px;
+  }
+
   .viewpoint-list .viewpoint-list-header {
-    padding-block: 32px;
+    padding-block: 24px;
   }
 
   .viewpoint-list .viewpoint-list-header h1 {
@@ -231,11 +297,7 @@ html[quick-edit] .viewpoint-list > [data-config] {
     flex: 1 1 100%;
   }
 
-  .viewpoint-list .viewpoint-list-cards {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .viewpoint-list .viewpoint-list-results {
-    padding-block: 32px;
+    padding-block: 24px;
   }
 }

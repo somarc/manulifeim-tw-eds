@@ -84,9 +84,15 @@ html[quick-edit] .search .search-heading {
   padding: 48px 64px 64px;
 }
 
+/* the header's search box (prefilled from ?q=; behind its toggle on phones) is the only one,
+   as on the source; the in-page form stays available in Canvas */
 .search .search-form {
-  display: flex;
+  display: none;
   margin-block-end: 24px;
+}
+
+html[quick-edit] .search .search-form {
+  display: flex;
 }
 
 .search .search-input {
@@ -269,6 +275,10 @@ html[quick-edit] .search .search-heading {
   gap: 16px;
   margin-block-start: 48px;
   font-size: var(--font-size-small);
+}
+
+.search .search-footer[hidden] {
+  display: none;
 }
 
 .search .search-per-page,

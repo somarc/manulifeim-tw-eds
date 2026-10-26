@@ -23,7 +23,7 @@ const LABELS = {
   gridView: 'Grid view',
   listView: 'List view',
   authors: 'Authors',
-  assetManagers: 'Asset managers',
+  assetManagers: 'Asset Managers',
   categories: 'Categories',
   clearAll: 'Clear all',
   listings: 'listings',
@@ -187,7 +187,11 @@ export function readRows(block, keys) {
   return { config, items };
 }
 
-/** Index rows narrowed by the common Source/Type/Category/Tags/Authors config keys. */
+/**
+ * Index rows narrowed by the common Source/Type/Category/Tags/Authors config keys.
+ * Only content items (rows with a Type: article, press) are listed: hub and listing pages
+ * under the same path (/viewpoints/all) are never teasers.
+ */
 export function filterRows(rows, config = {}) {
   const source = config.source ? pathOf(config.source) : '';
   const type = splitList(config.type).map(toId);
@@ -198,7 +202,7 @@ export function filterRows(rows, config = {}) {
   const any = (value, wanted) => !wanted.length
     || splitList(value).map(toId).some((v) => wanted.includes(v));
   return rows.filter((row) => {
-    if (!row.path || pathOf(row.path) === exclude) return false;
+    if (!row.path || !row.type || pathOf(row.path) === exclude) return false;
     if (source && source !== '/' && !`${pathOf(row.path)}/`.startsWith(`${source}/`)) return false;
     return any(row.type, type) && any(row.category, category)
       && any(row.tags, tags) && any(row.authors, authors);

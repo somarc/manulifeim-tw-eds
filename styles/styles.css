@@ -384,16 +384,17 @@ main > .section.title-row > .default-content-wrapper > :nth-child(n + 3) {
   margin-block-start: 64px;
 }
 
-/* title row + a toggling article list: the list's view controls sit on the title line (source) */
-main > .section.title-row:has(.article-cards.toggle) {
+/* `inline-controls`: a toggling article list puts its view controls on the title line (homepage source);
+   without it (viewpoints hub) the controls keep their own row, as on the source */
+main > .section.title-row.inline-controls:has(.article-cards.toggle) {
   position: relative;
 }
 
-main > .section.title-row:has(.article-cards.toggle) > .default-content-wrapper {
+main > .section.title-row.inline-controls:has(.article-cards.toggle) > .default-content-wrapper {
   padding-inline-end: 108px;
 }
 
-main > .section.title-row .article-cards.toggle .article-cards-controls {
+main > .section.title-row.inline-controls .article-cards.toggle .article-cards-controls {
   position: absolute;
   inset-block-start: var(--section-padding-block);
   inset-inline-end: var(--section-padding-inline);
@@ -462,11 +463,11 @@ main > .section.divider::after {
     padding-inline: 24px;
   }
 
-  main > .section.title-row:has(.article-cards.toggle) > .default-content-wrapper {
+  main > .section.title-row.inline-controls:has(.article-cards.toggle) > .default-content-wrapper {
     padding-inline-end: 0;
   }
 
-  main > .section.title-row .article-cards.toggle .article-cards-controls {
+  main > .section.title-row.inline-controls .article-cards.toggle .article-cards-controls {
     display: none;
   }
 

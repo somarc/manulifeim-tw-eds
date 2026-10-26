@@ -218,6 +218,7 @@ export default async function decorate(block) {
         pageButton('›', state.page + 1, { disabled: state.page >= pages, 'aria-label': text.next }),
       ) : '',
     );
+    footer.hidden = !hits.length;
     sync();
   }
 

@@ -1,7 +1,9 @@
 /* Press List: centred category tabs, media-contact sidebar, dated list, numbered pager */
 
+/* flush under the page header: absorbs its own section's top padding and the header
+   section's bottom padding (the source's tab bar touches the header band) */
 .press-list {
-  margin: calc(-1 * var(--section-padding-block)) calc(-1 * var(--section-padding-inline)) 0;
+  margin: calc(-2 * var(--section-padding-block)) calc(-1 * var(--section-padding-inline)) 0;
 }
 
 .press-list > [data-config] {
@@ -35,27 +37,35 @@ html[quick-edit] .press-list > [data-config] :is(p) {
   border: 0;
   border-block-end: 3px solid transparent;
   background: none;
-  color: var(--text-color);
+  color: var(--color-slate-500);
   font: inherit;
   font-size: var(--font-size-small);
   line-height: 19.6px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
 }
 
 .press-list .press-list-tab[aria-selected='true'] {
   border-block-end-color: var(--color-green-600);
+  color: var(--text-color);
+  font-weight: 700;
 }
 
 .press-list .press-list-tab:hover {
   text-decoration: underline;
 }
 
+/* source: a 25% contact column beside the list, 64px gutters down to tablet */
 .press-list .press-list-body {
   display: grid;
-  grid-template-columns: 304px minmax(0, 1fr);
+  grid-template-columns: 25% minmax(0, 1fr);
   gap: 32px;
-  padding: 32px var(--section-padding-inline);
+  padding: 32px 64px;
+}
+
+/* phones: the tabs become a native select */
+.press-list .press-list-picker {
+  display: none;
 }
 
 /* authored media-contact sidebar */
@@ -87,6 +97,11 @@ html[quick-edit] .press-list .press-list-contact > div:first-child {
   margin: 0;
 }
 
+/* email / phone values sit on 16px lines */
+.press-list .press-list-contact p:has(> a:only-child) {
+  line-height: 16px;
+}
+
 .press-list .press-list-contact a:any-link {
   color: var(--link-color);
   font-size: var(--font-size-body);
@@ -116,10 +131,6 @@ html[quick-edit] .press-list .press-list-contact > div:first-child {
 .press-list .press-list-item + .press-list-item {
   margin-block-start: 16px;
   border-block-start: 1px solid var(--rule-color);
-}
-
-.press-list .press-list-item:first-child {
-  padding-block-start: 0;
 }
 
 .press-list .press-list-date {
@@ -154,16 +165,17 @@ html[quick-edit] .press-list .press-list-contact > div:first-child {
 .press-list .press-list-pager ul {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  gap: 4px;
   margin: 0;
   padding: 32px;
   list-style: none;
 }
 
+/* the source's joined page cells: 1px #EDEDED borders shared between neighbours */
 .press-list .press-list-page {
-  min-width: 38px;
+  position: relative;
+  display: block;
   padding: 8px;
   border: 1px solid var(--rule-color);
   background-color: var(--color-white);
@@ -175,41 +187,74 @@ html[quick-edit] .press-list .press-list-contact > div:first-child {
   cursor: pointer;
 }
 
-.press-list .press-list-page[aria-current='page'] {
-  border-color: var(--color-navy-900);
-  font-weight: 700;
+.press-list .press-list-page:not(.press-list-dir):hover {
+  text-decoration: underline;
+}
+
+.press-list .press-list-pager li:nth-child(n + 3) .press-list-page:not(.press-list-dir) {
+  border-inline-start-width: 0;
+}
+
+.press-list .press-list-page[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  inset: auto -1px -1px;
+  height: 3px;
+  background-color: var(--color-green-600);
 }
 
 .press-list .press-list-page.press-list-dir {
+  padding: 0 0 0 8px;
   border: 0;
   background: none;
-  color: var(--color-navy-700);
+  color: var(--link-color);
   font-size: var(--font-size-meta);
+  line-height: 12px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
-.press-list .press-list-page:disabled {
-  opacity: 0.4;
+.press-list .press-list-pager li:first-child .press-list-dir {
+  padding: 0 8px 0 0;
+}
+
+.press-list .press-list-page.press-list-dir:disabled {
+  color: var(--color-navy-700);
   cursor: default;
 }
 
-@media (width <= 1100px) {
+@media (width <= 600px) {
   .press-list .press-list-body {
     grid-template-columns: minmax(0, 1fr);
+    padding: 24px;
   }
-}
 
-@media (width <= 600px) {
   .press-list .press-list-tabs {
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-inline: 0;
+    display: none;
   }
 
-  .press-list .press-list-tab {
-    flex: 0 0 auto;
-    padding-inline: 16px;
+  .press-list .press-list-picker {
+    display: block;
+    padding: 12px 24px;
+    background-color: var(--color-white);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 16%);
+  }
+
+  .press-list .press-list-select {
+    display: block;
+    width: 100%;
+    height: 56px;
+    padding: 16px 48px 16px 16px;
+    border: 1px solid var(--color-navy-900);
+    border-radius: 0;
+    background: var(--color-white) url('../../icons/arrow-down.svg') right 16px center / 16px no-repeat;
+    color: var(--text-color);
+    font: inherit;
+    appearance: none;
+  }
+
+  .press-list .press-list-item {
+    padding-block: 24px;
   }
 
   .press-list .press-list-title {

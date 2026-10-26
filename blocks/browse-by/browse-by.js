@@ -10,13 +10,14 @@ import {
   el, fetchSheet, guardLinks, labels, picture,
 } from '../../scripts/discovery.js';
 
-const VISIBLE = 9;
+// items shown before "View more" (the source's 240px window): 9 on desktop, 4 below 1100px
+const visible = () => (window.matchMedia('(width <= 1100px)').matches ? 4 : 9);
 
 function authorItems(rows, sort) {
   const sorted = [...rows].filter((a) => a.id && a.name);
   if (sort === 'recent') sorted.sort((a, b) => String(b.posted).localeCompare(String(a.posted)));
   else if (sort === 'count') sorted.sort((a, b) => Number(b.articles || 0) - Number(a.articles || 0));
-  else sorted.sort((a, b) => a.name.localeCompare(b.name));
+  // alphabetical = the sheet's order (the source's API order, see tools/importer/articles.py)
   return sorted.map((a) => el(
     'li',
     { class: 'browse-by-author' },
@@ -34,9 +35,10 @@ function moreToggle(list, text) {
   const button = el('button', { type: 'button', class: 'browse-by-more', 'aria-expanded': 'false' }, text.viewMore);
   const update = () => {
     const open = button.getAttribute('aria-expanded') === 'true';
-    [...list.children].forEach((li, i) => { li.hidden = !open && i >= VISIBLE; });
+    const count = visible();
+    [...list.children].forEach((li, i) => { li.hidden = !open && i >= count; });
     button.textContent = open ? text.viewLess : text.viewMore;
-    button.hidden = list.children.length <= VISIBLE;
+    button.hidden = list.children.length <= count;
   };
   button.addEventListener('click', () => {
     button.setAttribute('aria-expanded', String(button.getAttribute('aria-expanded') !== 'true'));

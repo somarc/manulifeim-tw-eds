@@ -65,7 +65,7 @@ export default async function decorate(block) {
         { class: 'case-study-list-body' },
         el('h3', { class: 'case-study-list-title' }, el('a', { href: r.link }, r.title)),
         el('ul', { class: 'case-study-list-pills' }, r.tagList.map((t) => pill(t, state.tags.includes(t)))),
-        el('p', { class: 'case-study-list-read' }, el('a', { href: r.link, class: 'link-cta', 'aria-label': `${text.readMore}: ${r.title}` }, text.readMore)),
+        el('p', { class: 'case-study-list-read' }, el('a', { href: r.link, class: 'case-study-list-read-link', 'aria-label': `${text.readMore}: ${r.title}` }, text.readMore)),
       ),
     )));
     more.hidden = hits.length <= state.shown;

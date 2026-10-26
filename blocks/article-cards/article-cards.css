@@ -115,8 +115,9 @@ html[quick-edit] .article-cards > [data-config] p {
   gap: var(--article-cards-gap);
 }
 
+/* the source's card mode: two 50%-minus-24px cards with a 24px right margin each */
 .article-cards .article-cards-list.is-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, calc(50% - var(--article-cards-gap))));
 }
 
 .article-cards.grid .article-card,
@@ -249,10 +250,11 @@ html[quick-edit] .article-cards > [data-config] p {
   box-shadow: var(--card-shadow);
 }
 
+/* the source's text column stops 30.5px short of the padded half (450px at 1440) */
 .article-cards.feature .article-card-body {
   grid-column: 1;
   grid-row: 1;
-  padding: 80px 64px;
+  padding: 80px calc(64px + 30.5px) 80px 64px;
 }
 
 .article-cards.feature .article-card-image {
@@ -276,9 +278,23 @@ html[quick-edit] .article-cards > [data-config] p {
   line-height: var(--line-height-display);
 }
 
+
+/* authors: 40px photo, 8px gap, 12/16 text right under the title; the position follows the
+   name on its line when it fits, else wraps below it (the source's flex-wrap row) */
 .article-cards.feature .teaser-authors {
   gap: 16px;
-  margin-block-start: 16px;
+  margin-block-start: 0;
+  line-height: 15.96px;
+}
+
+.article-cards.feature .teaser-author {
+  gap: 8px;
+}
+
+.article-cards.feature .teaser-author-text {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.25em;
 }
 
 .article-cards.feature .teaser-author-photo img {
@@ -312,8 +328,12 @@ html[quick-edit] .article-cards > [data-config] p {
   flex-direction: row-reverse;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
   padding: 32px 0;
+}
+
+/* the source's author block keeps 16px below it (description hidden in list mode) */
+.article-cards :is(.is-list, .is-grid) .teaser-authors {
+  margin-block-end: 16px;
 }
 
 .article-cards .is-list .article-card + .article-card {
@@ -349,13 +369,23 @@ html[quick-edit] .article-cards > [data-config] p {
   }
 
   .article-cards.feature .article-card-body {
-    padding: 48px 32px;
+    padding-inline-end: 64px;
   }
 }
 
 @media (width <= 800px) {
   .article-cards .article-cards-controls {
     display: none;
+  }
+
+  /* tablet list: the thumbnail moves left and the summary shows (source) */
+  .article-cards .is-list .article-card {
+    flex-direction: row;
+  }
+
+  .article-cards .is-list .article-card-description {
+    display: block;
+    margin-block-start: 0;
   }
 
   .article-cards.grid .article-cards-list,
@@ -370,19 +400,16 @@ html[quick-edit] .article-cards > [data-config] p {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* stacked as the source: text first, then a square photo; the title keeps display size */
   .article-cards.feature .article-card-image {
     grid-column: 1;
-    grid-row: 1;
+    grid-row: 2;
+    aspect-ratio: 1;
   }
 
   .article-cards.feature .article-card-body {
-    grid-row: 2;
-    padding: 32px 24px;
-  }
-
-  .article-cards.feature .article-card-body :is(h1, h2, h3) {
-    font-size: var(--font-size-title);
-    line-height: var(--line-height-title);
+    grid-row: 1;
+    padding: 32px;
   }
 
   .article-cards.trending .article-card:first-of-type {
@@ -395,6 +422,7 @@ html[quick-edit] .article-cards > [data-config] p {
   .article-cards .is-list .article-card {
     flex-direction: column;
     align-items: stretch;
+    gap: 16px;
   }
 
   .article-cards .is-list .article-card-image {
@@ -402,7 +430,17 @@ html[quick-edit] .article-cards > [data-config] p {
   }
 }
 
-/* list mode shows authors without photos; card mode adds them (source behaviour) */
-.article-cards.toggle .is-list .teaser-author-photo {
-  display: none;
+/* list mode: 40px author photos 8px from the text (the source lazy-loads them; once loaded
+   they show in both modes) */
+.article-cards :is(.is-list, .is-grid) .teaser-author {
+  gap: 8px;
+}
+
+.article-cards .is-list .teaser-author-photo {
+  flex-basis: 40px;
+}
+
+.article-cards .is-list .teaser-author-photo img {
+  width: 40px;
+  height: 40px;
 }

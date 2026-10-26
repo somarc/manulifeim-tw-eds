@@ -188,8 +188,11 @@ def authors_sheet():
             'logo': mapped_or_absolute(logos.get(company, ('', ''))[0]),
             'posted': datetime.fromtimestamp(posted / 1000, timezone.utc).strftime('%Y-%m-%d') if posted else '',
             'articles': str(a.get('viewpointsCount') or '0'),
+            '_sort': (a.get('title') or name).lower(),
         })
-    rows.sort(key=lambda r: r['name'].lower())
+    # the source's alphabetical order: raw API titles, case-insensitive (" Manulife Investment
+    # Management" has a leading space and so leads the list); browse-by keeps this sheet order
+    rows.sort(key=lambda r: r.pop('_sort'))
     return rows
 
 
@@ -275,12 +278,22 @@ def disclosure(node):
     return block('disclosure collapsible', [[p(esc(label)), body]])
 
 
+def fine_print(node):
+    """True when the node's text is all <small> (the source's fine print). <small> does not
+    survive DA -> aem.page, so fine print becomes its own section with Style `fine-print`."""
+    smalls = node.select('small')
+    return bool(smalls) and len(' '.join(text(s) for s in smalls)) >= len(text(node)) - 2
+
+
 def article_body(content):
-    """viewpoint-content children -> list of (kind, html). kind: 'default' | 'block'."""
+    """viewpoint-content children -> list of (kind, html). kind: 'default' | 'block' | 'fine'."""
     out = []
     for child in content.find_all(recursive=False):
         classes = child.get('class') or []
-        if 'disclosures' in classes:
+        if fine_print(child):
+            html_part = clean(child).strip()
+            out.append(('fine', html_part if html_part.startswith('<p') else p(html_part)))
+        elif 'disclosures' in classes:
             for disc in child.select('details.disc'):
                 out.append(('block', disclosure(disc)))
         elif child.select_one('.simpleBanner'):
@@ -321,11 +334,18 @@ def import_article(slug_name, path):
              for s in side.select('.viewpoint-links')}
     body = article_body(soup.select_one('.viewpoint-content'))
 
-    # sections: header | body (blocks inline, default content between) | related + tags footer
-    body_html = ''.join(h for _, h in body)
+    # sections: header | body (blocks inline, default content between; fine print in its own
+    # `fine-print` section) | related + tags footer
+    groups = []
+    for kind, html_part in body:
+        fine = kind == 'fine'
+        if groups and groups[-1][0] == fine:
+            groups[-1][1].append(html_part)
+        else:
+            groups.append((fine, [html_part]))
     sections = [
         section(f'<h1>{esc(h1)}</h1>', p(esc(summary))),
-        section(body_html),
+        *[section(''.join(parts), style='fine-print' if fine else None) for fine, parts in groups],
         section(related_block(soup)) if soup.select('.related-viewpoints .article-kicker') else '',
         section(fragment_link(FRAGMENT_TAGS)),
     ]
@@ -361,6 +381,8 @@ def import_press(slug_name, path):
     root = soup.select_one('.component-root')
     date = iso(text(root.select_one('time')))
     h1 = text(root.select_one('.title h1'))
+    # each source column container is its own padded band: wide (fw-12) body text, then one
+    # `narrow` section per fw-8 column ("About …", fine print, media contact)
     wide, narrow = [], []
     for container in root.select(':scope > .column-container'):
         col = container.select_one('.column-container__column')
@@ -369,7 +391,10 @@ def import_press(slug_name, path):
         html_part = clean(col)
         # "About …" headings are bold spans in the source: keep them as plain H3 text
         html_part = re.sub(r'<h3><strong>(.*?)</strong></h3>', r'<h3>\1</h3>', html_part)
-        (wide if 'column-container__column--fw-12' in col.get('class', []) else narrow).append(html_part)
+        if 'column-container__column--fw-12' in col.get('class', []):
+            wide.append(html_part)
+        else:
+            narrow.append(section(html_part, style='narrow, fine-print' if fine_print(col) else 'narrow'))
     description = cap.get('description') or ''
     if not description.strip():
         first = root.select_one('.text p:not(:has(em))') or root.select_one('.text p')
@@ -378,7 +403,7 @@ def import_press(slug_name, path):
     sections = [
         section(f'<h1>{esc(h1)}</h1>'),
         section(''.join(wide)) if wide else '',
-        section(''.join(narrow), style='narrow') if narrow else '',
+        *narrow,
     ]
     meta = {
         'Title': h1,
@@ -512,7 +537,9 @@ def import_case_studies():
         + p(f'<a href="{esc(site_path(cta.get("href")))}">{esc(text(cta))}</a>')]])
     listing = block('case-study-list', [[p('Source'), p('/data/case-studies.json')]])
     meta = {'Title': strip_title(cap['title']), 'Description': cap.get('description', '')}
-    return write('/sustainable-investing-case-studies', page([section(hero), section(listing)], meta))
+    # the source listing sits on white, continuing the header band
+    return write('/sustainable-investing-case-studies',
+                 page([section(hero), section(listing, style='white')], meta))
 
 
 def import_search():
@@ -530,16 +557,18 @@ def import_legal():
                   lambda m: '<h1><strong>' + re.sub(r'</?(a|strong)>', '', m.group(1)).strip() + '</strong></h1>',
                   body, count=1, flags=re.S)
     body = re.sub(r'<strong>\s*</strong>', ' ', body)
+    # legal pages use the article template's `legal` type (reading measure, title band, plain links)
+    legal = {'Template': 'article', 'Type': 'legal'}
     write('/important-information', tidy(page([section(body, style='narrow-center')],
                                          {'Title': strip_title(cap['title']),
-                                          'Description': cap.get('description', '')})))
+                                          'Description': cap.get('description', ''), **legal})))
     soup = load('pages/accessibility.main.html')
     cap = capture_json('accessibility')
     title = text(soup.select_one('.richtitle__text'))
     body = clean(soup.select_one('.text'))
-    return write('/accessibility', page([section(f'<h1>{esc(title)}</h1>', body)],
+    return write('/accessibility', page([section(f'<h1>{esc(title)}</h1>'), section(body)],
                                         {'Title': strip_title(cap['title']).replace(' | Institutional', ''),
-                                         'Description': cap.get('description', '')}))
+                                         'Description': cap.get('description', ''), **legal}))
 
 
 # ---------------------------------------------------------------------------- draft index

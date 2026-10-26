@@ -110,7 +110,6 @@ export default async function decorate(block) {
     count.textContent = hits.length ? `${hits.length} ${text.listings}` : text.noResults;
     list.replaceChildren(...hits.slice(0, shown).map((row) => card(row, authors, text)));
     more.hidden = hits.length <= shown;
-    clear.hidden = !Object.values(filters).some(Boolean);
   };
   const sync = () => {
     const url = new URL(window.location.href);
@@ -136,8 +135,17 @@ export default async function decorate(block) {
     render();
   });
 
+  // phones: the selects fold behind a "Filter" button, as on the source
+  const selectsBox = el('div', { class: 'viewpoint-list-selects', id: 'viewpoint-list-selects' }, selects);
+  const toggle = el('button', {
+    type: 'button', class: 'viewpoint-list-toggle', 'aria-expanded': 'false', 'aria-controls': selectsBox.id,
+  }, text.filter);
+  toggle.addEventListener('click', () => {
+    toggle.setAttribute('aria-expanded', String(toggle.getAttribute('aria-expanded') !== 'true'));
+  });
+
   block.append(
-    el('div', { class: 'viewpoint-list-filters' }, el('div', { class: 'viewpoint-list-selects' }, selects), clear),
+    el('div', { class: 'viewpoint-list-filters' }, toggle, selectsBox, clear),
     el('div', { class: 'viewpoint-list-results' }, count, list, more),
   );
   render();

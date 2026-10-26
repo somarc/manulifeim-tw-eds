@@ -11,8 +11,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 24px 48px;
-  border-block-end: 2px solid var(--color-grey-200);
+  padding: 27px 48px;
+  border-block-end: 1px solid var(--color-grey-250);
 }
 
 .browse-by .browse-by-title {
@@ -49,7 +49,7 @@
 }
 
 .browse-by .browse-by-panel {
-  padding: 32px 48px;
+  padding: 24px 32px;
 }
 
 .browse-by .browse-by-panel[hidden] {
@@ -75,7 +75,9 @@ html[quick-edit] .browse-by [data-config] {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-block-end: 24px;
+  min-height: 22px;
+  margin-block-end: 16px;
+  padding-inline-start: 16px;
 }
 
 .browse-by .browse-by-subtitle {
@@ -89,13 +91,15 @@ html[quick-edit] .browse-by [data-config] {
 .browse-by .browse-by-sort-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
+  padding-inline-start: 6px;
   font-size: var(--font-size-small);
+  line-height: 19.6px;
   font-weight: 700;
 }
 
 .browse-by .browse-by-sort {
-  padding: 1px 24px 1px 6px;
+  padding: 1px 25px 1px 0;
   border: 0;
   background: transparent url('../../icons/arrow-down.svg') right center / 16px no-repeat;
   color: var(--text-color);
@@ -105,12 +109,13 @@ html[quick-edit] .browse-by [data-config] {
   cursor: pointer;
 }
 
+/* source: 3 equal flex items per row (no column gap), 6.4px between rows, 2px mask inset */
 .browse-by ul {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px 24px;
+  gap: 6.4px 0;
   margin: 0;
-  padding: 0;
+  padding: 2px;
   list-style: none;
 }
 
@@ -130,9 +135,8 @@ html[quick-edit] .browse-by [data-config] {
 .browse-by .browse-by-author {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 88px;
-  padding: 0 16px;
+  gap: 4px;
+  padding: 8px 16px;
 }
 
 .browse-by .browse-by-photo {
@@ -173,6 +177,7 @@ html[quick-edit] .browse-by [data-config] {
   color: var(--text-color);
   font: inherit;
   font-size: var(--font-size-small);
+  line-height: 19.6px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -193,16 +198,35 @@ html[quick-edit] .browse-by [data-config] {
   display: none;
 }
 
-@media (width <= 1100px) {
+@media (width <= 800px) {
   .browse-by ul {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* stacked header: title over the tabs */
+  .browse-by .browse-by-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 32px;
+  }
+
+  .browse-by .browse-by-tabs {
+    padding: 2px 0 2px 2px;
+  }
+
+  .browse-by .browse-by-panel {
+    padding: 24px 16px;
   }
 }
 
 @media (width <= 600px) {
-  .browse-by .browse-by-header,
+  .browse-by .browse-by-header {
+    padding: 24px 0 0;
+  }
+
   .browse-by .browse-by-panel {
-    padding: 24px 16px;
+    padding: 24px 0;
   }
 
   .browse-by ul {

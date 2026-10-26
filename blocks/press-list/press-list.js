@@ -87,6 +87,17 @@ export default async function decorate(block) {
   const tablist = el('div', { class: 'press-list-tabs', role: 'tablist' });
   const list = el('ol', { class: 'press-list-items' });
   const results = el('div', { class: 'press-list-results', role: 'tabpanel' }, list);
+  const select = el(
+    'select',
+    { class: 'press-list-select', 'aria-label': text.filter },
+    tabs.map((label, i) => el('option', { value: String(i) }, label)),
+  );
+  select.addEventListener('change', () => {
+    state.tab = Number(select.value);
+    state.page = 1;
+    // eslint-disable-next-line no-use-before-define
+    render(true);
+  });
   const tabButtons = tabs.map((label, i) => {
     const tab = el('button', { type: 'button', role: 'tab', class: 'press-list-tab' }, label);
     tab.addEventListener('click', () => {
@@ -108,6 +119,7 @@ export default async function decorate(block) {
       tab.setAttribute('aria-selected', String(i === state.tab));
       tab.tabIndex = i === state.tab ? 0 : -1;
     });
+    select.value = String(state.tab);
     list.replaceChildren(...hits.slice((state.page - 1) * pageSize, state.page * pageSize)
       .map((r) => el(
         'li',
@@ -135,7 +147,7 @@ export default async function decorate(block) {
   const body = el('div', { class: 'press-list-body' });
   if (contactRow) body.append(contactRow);
   body.append(results);
-  block.prepend(tablist);
+  block.prepend(tablist, el('div', { class: 'press-list-picker' }, select));
   block.append(body);
   render(false);
   guardLinks(block, authoring);
