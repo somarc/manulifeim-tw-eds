@@ -69,7 +69,7 @@ function regionView(dialog, back) {
 export default async function gate() {
   if (document.documentElement.hasAttribute('quick-edit')) return;
   if (toClassName(getMetadata('disclaimer')) === 'off') return;
-  if (/^\/(nav|footer|fragments\/)/.test(window.location.pathname)) return;
+  if (/^\/(nav|footer|fragments\/|library\/)/.test(window.location.pathname)) return;
   if (document.querySelector('dialog.disclaimer')) return;
 
   const fragment = await loadFragment(FRAGMENT);

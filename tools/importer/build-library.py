@@ -106,8 +106,8 @@ def main():
     for name, variants in sorted(found.items()):
         sections = []
         for key, (rel, block) in variants.items():
-            label = f'{name} ({key})' if key else name
-            sections.append(f'<div><h2>{label}</h2>{block}{library_metadata(DESCRIPTIONS.get(name, f"From /{rel[:-5]}"))}</div>')
+            # visual variants are named by the block header (`cards (info)`); no extra heading
+            sections.append(f'<div>{block}{library_metadata(DESCRIPTIONS.get(name, f"From /{rel[:-5]}"))}</div>')
         write_doc(root, f'library/blocks/{name}.html', '\n'.join(sections))
         rows.append({'name': name.replace('-', ' ').title(), 'path': f'{DA}/library/blocks/{name}'})
         print(f'  {name}: {", ".join(k or "(default)" for k in variants)}')

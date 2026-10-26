@@ -215,8 +215,8 @@ async function loadEager(doc) {
  */
 async function loadLazy(doc) {
   const main = doc.querySelector('main');
-  // shared documents (/nav, /footer, /fragments/*) are edited standalone, without recursive chrome
-  const isSharedDocument = /^\/(nav|footer|fragments\/)/.test(window.location.pathname);
+  // shared documents (/nav, /footer, /fragments/*, /library/*) render without recursive chrome
+  const isSharedDocument = /^\/(nav|footer|fragments\/|library\/)/.test(window.location.pathname);
   const header = doc.querySelector('body > header');
   const footer = doc.querySelector('body > footer');
   const chrome = isSharedDocument ? [] : [header && loadHeader(header)];
